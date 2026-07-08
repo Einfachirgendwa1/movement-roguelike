@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://obd7pt4k3aw1"]
 
 [ext_resource type="PackedScene" uid="uid://7aye5i2307ng" path="res://Player/player.tscn" id="1_n0qsc"]
+[ext_resource type="Texture2D" uid="uid://cv3i6ob8dskt7" path="res://Assets/Skyboxes/AllSkyFree_Sky_ColdSunset_Equirect.png" id="2_dilhk"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_f1bjn"]
 
@@ -14,13 +15,24 @@ material = SubResource("ORMMaterial3D_e0uct")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_m6ohi"]
 
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_f6v34"]
+panorama = ExtResource("2_dilhk")
+
+[sub_resource type="Sky" id="Sky_f6v34"]
+sky_material = SubResource("PanoramaSkyMaterial_f6v34")
+
+[sub_resource type="Environment" id="Environment_f1bjn"]
+background_mode = 2
+sky = SubResource("Sky_f6v34")
+ambient_light_color = Color(1, 1, 1, 1)
+
 [node name="Level 1" type="Node3D" unique_id=449401401]
 
 [node name="Player" parent="." unique_id=212192737 instance=ExtResource("1_n0qsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.0011044, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1183141172]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 3.2839274, 0)
+transform = Transform3D(1, 0, 0, 0, 0.91128206, 0.41178277, 0, -0.41178277, 0.91128206, 0, 3.2839274, 0)
 
 [node name="Ground" type="StaticBody3D" parent="." unique_id=1083419382]
 
@@ -39,3 +51,6 @@ mesh = SubResource("BoxMesh_f6v34")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Box" unique_id=2035165617]
 shape = SubResource("BoxShape3D_m6ohi")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=82786932]
+environment = SubResource("Environment_f1bjn")

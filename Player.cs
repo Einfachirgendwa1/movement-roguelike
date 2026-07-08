@@ -13,7 +13,11 @@ public partial class Player : CharacterBody3D {
     }
 
     public override void _PhysicsProcess(double delta) {
+        #region Movement
+
         Velocity += GetGravity();
+
+        #region Horizontal Movement
 
         int left = Input.IsActionPressed("Left") ? 1 : 0;
         int right = Input.IsActionPressed("Right") ? 1 : 0;
@@ -23,24 +27,40 @@ public partial class Player : CharacterBody3D {
         int backward = Input.IsActionPressed("Backward") ? 1 : 0;
         int zAxis = backward - forward;
 
-        int jump = Input.IsActionPressed("Jump") ? 1 : 0;
-        int yAxis = jump;
-        
-        
         Vector3 direction = Transform.Basis * new Vector3(xAxis, 0, zAxis);
         Vector3 movement = direction.Normalized() * MovementSpeed;
-        movement.Y = Velocity.Y+yAxis * (IsOnFloor() ? JumpImpulse : 0);
+        movement.Y = Velocity.Y;
         Velocity = movement;
+
+        #endregion
+
+        #region Vertical Movement
+
+        if (Input.IsActionPressed("Jump") && IsOnFloor()) {
+            Velocity += new Vector3(0, JumpImpulse, 0);
+        }
+
+        #endregion
+
         MoveAndSlide();
+
+        #endregion
     }
 
     public override void _Process(double delta) {
+        #region Escape Input
+
+        // This should later open a pause menu
         if (Input.IsActionJustPressed("Escape")) {
             Input.SetMouseMode(Input.MouseModeEnum.Visible);
         }
+
+        #endregion
     }
 
     public override void _Input(InputEvent @event) {
+        #region Camera Rotation with Mouse
+
         if (@event is InputEventMouseMotion mouseMotion) {
             RotateY(-mouseMotion.Relative.X * MouseSensitivity);
 
@@ -55,5 +75,7 @@ public partial class Player : CharacterBody3D {
                 cameraPivot.Rotation = rotation;
             }
         }
+
+        #endregion
     }
 }
