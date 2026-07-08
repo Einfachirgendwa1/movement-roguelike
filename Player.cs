@@ -41,7 +41,8 @@ public partial class Player : CharacterBody3D {
         Vector3 targetVelocity = direction * targetSpeed;
 
         float currentSpeed = horizontalVelocity.Length();
-        bool isSlowingDown = (horizontalVelocity + targetVelocity).LengthSquared() <= currentSpeed * currentSpeed;
+        bool isSlowingDown = (horizontalVelocity + targetVelocity).Length() <= currentSpeed * currentSpeed;
+
 
         Vector3 newHorizontalVelocity = isSlowingDown switch {
             true                                  => horizontalVelocity.Lerp(targetVelocity, DecelerationSpeed),
