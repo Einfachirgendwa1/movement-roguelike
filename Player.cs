@@ -26,8 +26,11 @@ public partial class Player : CharacterBody3D {
         int backward = Input.IsActionPressed("Backward") ? 1 : 0;
         int zAxis = backward - forward;
 
+        float sprinting = Input.IsActionPressed("Sprint") ? SprintMult : 1;
+
         Vector3 direction = Transform.Basis * new Vector3(xAxis, 0, zAxis);
         Vector3 movement = direction.Normalized() * MovementSpeed;
+        movement *= sprinting;
         movement.Y = Velocity.Y;
         Velocity = movement;
 
@@ -51,7 +54,9 @@ public partial class Player : CharacterBody3D {
 
         // This should later open a pause menu
         if (Input.IsActionJustPressed("Escape")) {
-            Input.SetMouseMode(Input.MouseModeEnum.Visible);
+            Input.SetMouseMode(Input.GetMouseMode() == Input.MouseModeEnum.Visible
+                ? Input.MouseModeEnum.Captured
+                : Input.MouseModeEnum.Visible);
         }
 
         #endregion
