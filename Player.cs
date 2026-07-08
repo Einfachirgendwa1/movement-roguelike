@@ -23,7 +23,7 @@ public partial class Player : CharacterBody3D {
         int backward = Input.IsActionPressed("Backward") ? 1 : 0;
         int zAxis = backward - forward;
 
-        Vector3 direction = new(xAxis, 0, zAxis);
+        Vector3 direction = Transform.Basis * new Vector3(xAxis, 0, zAxis);
         Vector3 movement = direction.Normalized() * MovementSpeed;
         movement.Y = Velocity.Y;
         Velocity = movement;
