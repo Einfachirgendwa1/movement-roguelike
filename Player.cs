@@ -1,6 +1,5 @@
 using Godot;
 using static MovementRoguelike3D.Settings;
-using static MovementRoguelike3D.Utils;
 
 namespace MovementRoguelike3D;
 
@@ -29,27 +28,23 @@ public partial class Player : CharacterBody3D {
         int backward = Input.IsActionPressed("Backward") ? 1 : 0;
         int zAxis = backward - forward;
 
-        float sprinting = Input.IsActionPressed("Sprint") ? SprintMult : 1;
-
+        bool sprinting = Input.IsActionPressed("Sprint");
 
         Vector3 horizontalVelocity = new(Velocity.X, 0, Velocity.Z);
         Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
 
         #endregion
 
-        float targetSpeed = MovementSpeed * sprinting;
-        Vector3 targetVelocity = direction * targetSpeed;
+        #region Speed Calculation
 
+        float maxSpeed = MovementSpeed * (sprinting ? SprintMult : 1);
         float currentSpeed = horizontalVelocity.Length();
-        bool isSlowingDown = (horizontalVelocity + targetVelocity).Length() <= currentSpeed * currentSpeed;
+        float targetSpeed = currentSpeed > maxSpeed && sprinting ? currentSpeed : maxSpeed;
+        float newSpeed = Mathf.Lerp(currentSpeed, targetSpeed, AccelerationSpeed);
 
+        #endregion
 
-        Vector3 newHorizontalVelocity = isSlowingDown switch {
-            true                                  => horizontalVelocity.Lerp(targetVelocity, DecelerationSpeed),
-            false when currentSpeed < targetSpeed => horizontalVelocity.Lerp(targetVelocity, AccelerationSpeed),
-            _                                     => direction * currentSpeed
-        };
-
+        Vector3 newHorizontalVelocity = direction * newSpeed;
         Velocity = new Vector3(newHorizontalVelocity.X, Velocity.Y, newHorizontalVelocity.Z);
 
         #endregion
@@ -62,6 +57,7 @@ public partial class Player : CharacterBody3D {
 
         #endregion
 
+        // Velocity *= DragMultiplier;
         MoveAndSlide();
 
         #endregion
