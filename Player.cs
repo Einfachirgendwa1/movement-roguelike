@@ -19,6 +19,8 @@ public partial class Player : CharacterBody3D {
 
         #region Horizontal Movement
 
+        #region Get Direction
+
         int left = Input.IsActionPressed("Left") ? 1 : 0;
         int right = Input.IsActionPressed("Right") ? 1 : 0;
         int xAxis = right - left;
@@ -32,15 +34,19 @@ public partial class Player : CharacterBody3D {
 
         Vector3 horizontalVelocity = new(Velocity.X, 0, Velocity.Z);
         Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
-        Vector3 targetVelocity = direction * MovementSpeed * sprinting;
+
+        #endregion
+
+        float targetSpeed = MovementSpeed * sprinting;
+        Vector3 targetVelocity = direction * targetSpeed;
 
         float currentSpeed = horizontalVelocity.Length();
         bool isSlowingDown = (horizontalVelocity + targetVelocity).LengthSquared() <= currentSpeed * currentSpeed;
 
         Vector3 newHorizontalVelocity = isSlowingDown switch {
-            true                                    => horizontalVelocity.Lerp(targetVelocity, DecelerationSpeed),
-            false when currentSpeed < MovementSpeed => horizontalVelocity.Lerp(targetVelocity, AccelerationSpeed),
-            _                                       => direction * currentSpeed
+            true                                  => horizontalVelocity.Lerp(targetVelocity, DecelerationSpeed),
+            false when currentSpeed < targetSpeed => horizontalVelocity.Lerp(targetVelocity, AccelerationSpeed),
+            _                                     => direction * currentSpeed
         };
 
         Velocity = new Vector3(newHorizontalVelocity.X, Velocity.Y, newHorizontalVelocity.Z);
