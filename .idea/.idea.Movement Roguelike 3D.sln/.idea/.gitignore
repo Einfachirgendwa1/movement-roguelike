@@ -3,9 +3,9 @@
 /workspace.xml
 # Rider ignored files
 /modules.xml
-/projectSettingsUpdater.xml
-/.idea.movement-roguelike-3d.iml
 /contentModel.xml
+/.idea.Movement Roguelike 3D.sln.iml
+/projectSettingsUpdater.xml
 # Editor-based HTTP Client requests
 /httpRequests/
 # Ignored default folder with query files

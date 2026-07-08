@@ -1,3 +1,16 @@
 [gd_scene format=3 uid="uid://obd7pt4k3aw1"]
 
+[ext_resource type="PackedScene" uid="uid://7aye5i2307ng" path="res://Player/player.tscn" id="1_n0qsc"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_f6v34"]
+
 [node name="Level 1" type="Node3D" unique_id=449401401]
+
+[node name="Player" parent="." unique_id=212192737 instance=ExtResource("1_n0qsc")]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1620648947]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.4906383)
+mesh = SubResource("BoxMesh_f6v34")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1183141172]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 3.2839274, 0)
