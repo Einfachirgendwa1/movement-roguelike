@@ -4,13 +4,21 @@
 
 [sub_resource type="BoxMesh" id="BoxMesh_f6v34"]
 
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_f1bjn"]
+
 [node name="Level 1" type="Node3D" unique_id=449401401]
 
 [node name="Player" parent="." unique_id=212192737 instance=ExtResource("1_n0qsc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.0011044, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1620648947]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.4906383)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7708378, -3.4906383)
 mesh = SubResource("BoxMesh_f6v34")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1183141172]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 3.2839274, 0)
+
+[node name="Ground" type="StaticBody3D" parent="." unique_id=1083419382]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground" unique_id=493753612]
+shape = SubResource("WorldBoundaryShape3D_f1bjn")
