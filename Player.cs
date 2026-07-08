@@ -23,11 +23,14 @@ public partial class Player : CharacterBody3D {
         int backward = Input.IsActionPressed("Backward") ? 1 : 0;
         int zAxis = backward - forward;
 
+        int jump = Input.IsActionPressed("Jump") ? 1 : 0;
+        int yAxis = jump;
+        
+        
         Vector3 direction = Transform.Basis * new Vector3(xAxis, 0, zAxis);
         Vector3 movement = direction.Normalized() * MovementSpeed;
-        movement.Y = Velocity.Y;
+        movement.Y = Velocity.Y+yAxis * (IsOnFloor() ? JumpImpulse : 0);
         Velocity = movement;
-
         MoveAndSlide();
     }
 

@@ -5,4 +5,5 @@ public static class Settings {
     public static float MouseSensitivity => .003f;
     public static float MinPitch => -90;
     public static float MaxPitch => 90;
+    public static float JumpImpulse => 10f;
 }

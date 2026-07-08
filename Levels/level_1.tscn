@@ -2,8 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://7aye5i2307ng" path="res://Player/player.tscn" id="1_n0qsc"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_f6v34"]
-
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_f1bjn"]
 
 [sub_resource type="ORMMaterial3D" id="ORMMaterial3D_e0uct"]
@@ -12,14 +10,14 @@ albedo_color = Color(0.27, 0.27, 0.27, 1)
 [sub_resource type="PlaneMesh" id="PlaneMesh_sd27u"]
 material = SubResource("ORMMaterial3D_e0uct")
 
+[sub_resource type="BoxMesh" id="BoxMesh_f6v34"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_m6ohi"]
+
 [node name="Level 1" type="Node3D" unique_id=449401401]
 
 [node name="Player" parent="." unique_id=212192737 instance=ExtResource("1_n0qsc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.0011044, 0)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1620648947]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7708378, -3.4906383)
-mesh = SubResource("BoxMesh_f6v34")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1183141172]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 3.2839274, 0)
@@ -32,3 +30,12 @@ shape = SubResource("WorldBoundaryShape3D_f1bjn")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=1479986283]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
 mesh = SubResource("PlaneMesh_sd27u")
+
+[node name="Box" type="StaticBody3D" parent="." unique_id=1630192637]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.065635085, 0.901294, -3.381759)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Box" unique_id=1620648947]
+mesh = SubResource("BoxMesh_f6v34")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Box" unique_id=2035165617]
+shape = SubResource("BoxShape3D_m6ohi")
