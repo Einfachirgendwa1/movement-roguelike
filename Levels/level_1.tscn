@@ -6,6 +6,12 @@
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_f1bjn"]
 
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_e0uct"]
+albedo_color = Color(0.27, 0.27, 0.27, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_sd27u"]
+material = SubResource("ORMMaterial3D_e0uct")
+
 [node name="Level 1" type="Node3D" unique_id=449401401]
 
 [node name="Player" parent="." unique_id=212192737 instance=ExtResource("1_n0qsc")]
@@ -22,3 +28,7 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Ground" unique_id=493753612]
 shape = SubResource("WorldBoundaryShape3D_f1bjn")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=1479986283]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+mesh = SubResource("PlaneMesh_sd27u")
