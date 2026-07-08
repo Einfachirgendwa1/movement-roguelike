@@ -1,12 +1,27 @@
 ﻿namespace MovementRoguelike3D;
 
 public static class Settings {
-    public static float MovementSpeed => 5f;
-    public static float AccelerationSpeed => 1 / 15f;
-    public static float DragMultiplier => 0.99f;
+    #region Abilities
+
+    public static float MoveStrength => 1.5f;
+    public static float AirMoveMultiplier => 0.3f;
+    public static float JumpImpulse => 20f;
+    public static float SprintMult => 1.5f;
+
+    #endregion
+
+    #region Input
+
     public static float MouseSensitivity => .003f;
     public static float MinPitch => -90;
     public static float MaxPitch => 90;
-    public static float JumpImpulse => 10f;
-    public static float SprintMult => 2f;
+
+    #endregion
+
+    #region Drag
+
+    public static float GroundDrag => 0.80f;
+    public static float AirDrag => 0.95f;
+
+    #endregion
 }

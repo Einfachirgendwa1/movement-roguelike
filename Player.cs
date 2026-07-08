@@ -14,11 +14,12 @@ public partial class Player : CharacterBody3D {
     public override void _PhysicsProcess(double delta) {
         #region Movement
 
+        bool onGround = IsOnFloor();
         Velocity += GetGravity();
 
         #region Horizontal Movement
 
-        #region Get Direction
+        #region Read Input
 
         int left = Input.IsActionPressed("Left") ? 1 : 0;
         int right = Input.IsActionPressed("Right") ? 1 : 0;
@@ -29,35 +30,26 @@ public partial class Player : CharacterBody3D {
         int zAxis = backward - forward;
 
         bool sprinting = Input.IsActionPressed("Sprint");
+        float sprintMult = sprinting ? SprintMult : 1;
 
-        Vector3 horizontalVelocity = new(Velocity.X, 0, Velocity.Z);
+        #endregion
+
+        float airMult = !onGround ? AirMoveMultiplier : 1;
         Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
-
-        #endregion
-
-        #region Speed Calculation
-
-        float maxSpeed = MovementSpeed * (sprinting ? SprintMult : 1);
-        float currentSpeed = horizontalVelocity.Length();
-        float targetSpeed = currentSpeed > maxSpeed && sprinting ? currentSpeed : maxSpeed;
-        float newSpeed = Mathf.Lerp(currentSpeed, targetSpeed, AccelerationSpeed);
-
-        #endregion
-
-        Vector3 newHorizontalVelocity = direction * newSpeed;
-        Velocity = new Vector3(newHorizontalVelocity.X, Velocity.Y, newHorizontalVelocity.Z);
+        Velocity += direction * MoveStrength * sprintMult * airMult;
+        GD.Print(Velocity.Length());
 
         #endregion
 
         #region Vertical Movement
 
-        if (Input.IsActionPressed("Jump") && IsOnFloor()) {
+        if (Input.IsActionPressed("Jump") && onGround) {
             Velocity += new Vector3(0, JumpImpulse, 0);
         }
 
         #endregion
 
-        // Velocity *= DragMultiplier;
+        Velocity *= onGround ? GroundDrag : AirDrag;
         MoveAndSlide();
 
         #endregion
