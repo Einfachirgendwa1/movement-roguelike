@@ -1,5 +1,6 @@
 using Godot;
 using static MovementRoguelike3D.Settings;
+using static MovementRoguelike3D.Utils;
 
 namespace MovementRoguelike3D;
 
@@ -28,11 +29,21 @@ public partial class Player : CharacterBody3D {
 
         float sprinting = Input.IsActionPressed("Sprint") ? SprintMult : 1;
 
-        Vector3 direction = Transform.Basis * new Vector3(xAxis, 0, zAxis);
-        Vector3 movement = direction.Normalized() * MovementSpeed;
-        movement *= sprinting;
-        movement.Y = Velocity.Y;
-        Velocity = movement;
+
+        Vector3 horizontalVelocity = new(Velocity.X, 0, Velocity.Z);
+        Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
+        Vector3 targetVelocity = direction * MovementSpeed * sprinting;
+
+        float currentSpeed = horizontalVelocity.Length();
+        bool isSlowingDown = (horizontalVelocity + targetVelocity).LengthSquared() <= currentSpeed * currentSpeed;
+
+        Vector3 newHorizontalVelocity = isSlowingDown switch {
+            true                                    => horizontalVelocity.Lerp(targetVelocity, DecelerationSpeed),
+            false when currentSpeed < MovementSpeed => horizontalVelocity.Lerp(targetVelocity, AccelerationSpeed),
+            _                                       => direction * currentSpeed
+        };
+
+        Velocity = new Vector3(newHorizontalVelocity.X, Velocity.Y, newHorizontalVelocity.Z);
 
         #endregion
 
