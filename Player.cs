@@ -1,4 +1,3 @@
-#nullable enable
 using Godot;
 using static MovementRoguelike3D.Settings;
 
