@@ -8,29 +8,29 @@ public partial class Player : CharacterBody3D {
     private Node3D? cameraPivot;
     private RayCast3D? rayCast;
     private ColorRect? crosshair;
-    private MeshInstance3D? sphere;
 
     public override void _Ready() {
         Input.SetMouseMode(Input.MouseModeEnum.Captured);
         cameraPivot = GetNode<Node3D>("Camera3D");
         rayCast = GetNode<RayCast3D>("Camera3D/RayCast3D");
         crosshair = GetNode<ColorRect>("Crosshair");
-        sphere = GetNode<MeshInstance3D>("Sphere");
     }
 
     public override void _PhysicsProcess(double delta) {
         #region Attack Detection
 
-        if (Input.IsActionJustPressed("Attack")) {
-            if (rayCast!.GetCollider() is IHealth objectWithHp) {
-                objectWithHp.Health -= GetMeleeDamage();
-                Velocity = new Vector3(Velocity.X, -2 * Velocity.Y, Velocity.Z);
+        if (Input.IsActionJustPressed("Attack") && rayCast!.GetCollider() is IHealth objectWithHp) {
+            objectWithHp.Health -= GetMeleeDamage();
+
+            if (objectWithHp.IsAlive) {
+                Velocity = Velocity.Bounce(Vector3.Forward);
+            } else {
+                float yVelocity = Mathf.Max(-2 * Velocity.Y, JumpImpulse);
+                Velocity = new Vector3(Velocity.X, yVelocity, Velocity.Z);
             }
         }
 
         #endregion
-
-        #region Movement
 
         bool onGround = IsOnFloor();
         Velocity += GetGravity();
@@ -68,19 +68,9 @@ public partial class Player : CharacterBody3D {
 
         Velocity *= onGround ? GroundDrag : AirDrag;
         MoveAndSlide();
-
-        #endregion
-
-        #region Debug Print Collision
-
-        if (rayCast!.GetCollisionPoint() is { } point) {
-            sphere!.GlobalPosition = point;
-        }
-
-        #endregion
     }
 
-    private float GetMeleeDamage() => Velocity.Length();
+    private float GetMeleeDamage() => Velocity.Length() * 2;
 
     public override void _Process(double delta) {
         #region Escape Input

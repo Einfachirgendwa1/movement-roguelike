@@ -6,14 +6,6 @@
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_f1bjn"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f6v34"]
-albedo_color = Color(0, 0.91557163, 0.91557133, 1)
-
-[sub_resource type="SphereMesh" id="SphereMesh_f1bjn"]
-material = SubResource("StandardMaterial3D_f6v34")
-radius = 0.2
-height = 0.4
-
 [node name="Player" type="CharacterBody3D" unique_id=212192737]
 script = ExtResource("1_l8h54")
 
@@ -43,8 +35,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.68003964, 0)
 current = true
 
 [node name="RayCast3D" type="RayCast3D" parent="Camera3D" unique_id=817645748]
-target_position = Vector3(0, 0, -100)
+target_position = Vector3(0, 0, -4)
 collision_mask = 2
-
-[node name="Sphere" type="MeshInstance3D" parent="." unique_id=1653716057]
-mesh = SubResource("SphereMesh_f1bjn")

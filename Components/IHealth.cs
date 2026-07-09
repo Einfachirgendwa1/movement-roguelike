@@ -2,4 +2,5 @@
 
 public interface IHealth {
     public float Health { get; set; }
+    public bool IsAlive => Health > 0;
 }
