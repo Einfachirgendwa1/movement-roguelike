@@ -8,12 +8,14 @@ public partial class Player : CharacterBody3D {
     private Node3D? cameraPivot;
     private RayCast3D? rayCast;
     private ColorRect? crosshair;
+    private MeshInstance3D? sphere;
 
     public override void _Ready() {
         Input.SetMouseMode(Input.MouseModeEnum.Captured);
         cameraPivot = GetNode<Node3D>("Camera3D");
         rayCast = GetNode<RayCast3D>("Camera3D/RayCast3D");
         crosshair = GetNode<ColorRect>("Crosshair");
+        sphere = GetNode<MeshInstance3D>("Sphere");
     }
 
     public override void _PhysicsProcess(double delta) {
@@ -68,6 +70,14 @@ public partial class Player : CharacterBody3D {
         MoveAndSlide();
 
         #endregion
+
+        #region Debug Print Collision
+
+        if (rayCast!.GetCollisionPoint() is { } point) {
+            sphere!.GlobalPosition = point;
+        }
+
+        #endregion
     }
 
     private float GetMeleeDamage() => Velocity.Length();
@@ -94,7 +104,7 @@ public partial class Player : CharacterBody3D {
     public override void _Input(InputEvent @event) {
         #region Camera Rotation with Mouse
 
-        if (@event is InputEventMouseMotion mouseMotion) {
+        if (@event is InputEventMouseMotion mouseMotion && Input.GetMouseMode() == Input.MouseModeEnum.Captured) {
             RotateY(-mouseMotion.Relative.X * MouseSensitivity);
 
             if (cameraPivot != null) {
