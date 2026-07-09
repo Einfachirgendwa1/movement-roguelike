@@ -96,8 +96,8 @@ public partial class Player : CharacterBody3D {
 	private IEnumerator<Interrupt?> AttackCoroutine(float damage) {
 		isAttacking = true;
 
-		var alreadyHit = new HashSet<IHealth>();
-		var waiter = new NextPhysicsFrame();
+		HashSet<IHealth> alreadyHit = new();
+		NextPhysicsFrame waiter = new();
 		double elapsed = 0;
 
 		while (elapsed < AttackWindowDuration) {
@@ -146,6 +146,22 @@ public partial class Player : CharacterBody3D {
 		if (IsOnWall() && WallDot() < 0) {
 			RotateY(Forward().SignedAngleTo(WallRunClampedDirection(), Vector3.Up) * 0.13f);
 		}
+
+		#endregion
+
+		#region Camera Tilt while Wallrunning
+
+		float targetTilt = 0f;
+
+		if (IsOnWall() ) {
+			// Vorzeichen bestimmt, ob die Wand links oder rechts ist
+			float wallSide = Forward().Cross(Vector3.Up).Dot(GetWallNormal())*-1;
+			targetTilt = Mathf.Sign(wallSide) * WallTiltAngle;
+		}
+
+		Vector3 camRotation = camera!.Rotation;
+		camRotation.Z = Mathf.LerpAngle(camRotation.Z, Mathf.DegToRad(targetTilt), (float)delta * WallTiltSpeed);
+		camera.Rotation = camRotation;
 
 		#endregion
 	}
