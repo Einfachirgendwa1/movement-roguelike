@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://d4m0ev54chy3k"]
+
+[ext_resource type="Script" uid="uid://c5k6mf6ghh3j2" path="res://Coroutines/Coroutines.cs" id="1_y7nnl"]
+
+[node name="Node" type="Node" unique_id=886116230]
+script = ExtResource("1_y7nnl")

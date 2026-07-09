@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using Godot;
+using MovementRoguelike3D.Coroutines;
 
 namespace MovementRoguelike3D;
 
-public partial class Settings : Node2D {
+public static class Prelude {
+    #region Settings
+
     #region Abilities
 
     public static float MoveStrength => 1.5f;
@@ -40,6 +44,17 @@ public partial class Settings : Node2D {
             fov = value;
             OnFovChange?.Invoke(fov);
         }
+    }
+
+    #endregion
+
+    #endregion
+
+
+    #region Imports
+
+    public static void StartCoroutine(IEnumerator<Interrupt?> coroutine) {
+        Coroutines.Coroutines.StartCoroutine(coroutine);
     }
 
     #endregion

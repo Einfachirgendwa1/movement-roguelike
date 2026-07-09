@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using Godot;
 using MovementRoguelike3D.Components;
-using static MovementRoguelike3D.Settings;
+using MovementRoguelike3D.Coroutines;
+using static MovementRoguelike3D.Prelude;
 
 namespace MovementRoguelike3D;
 
