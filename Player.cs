@@ -143,7 +143,7 @@ public partial class Player : CharacterBody3D {
 
 		#region Lock Camera while Wallrunning
 
-		if (IsOnWall() && WallDot() < 0) {
+		if (IsOnWall() && !IsOnFloor() && WallDot() < 0) {
 			RotateY(Forward().SignedAngleTo(WallRunClampedDirection(), Vector3.Up) * 0.13f);
 		}
 
@@ -153,7 +153,7 @@ public partial class Player : CharacterBody3D {
 
 		float targetTilt = 0f;
 
-		if (IsOnWall() ) {
+		if (IsOnWall() && !IsOnFloor()) {
 			// Vorzeichen bestimmt, ob die Wand links oder rechts ist
 			float wallSide = Forward().Cross(Vector3.Up).Dot(GetWallNormal())*-1;
 			targetTilt = Mathf.Sign(wallSide) * WallTiltAngle;

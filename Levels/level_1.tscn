@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://obd7pt4k3aw1"]
 
 [ext_resource type="PackedScene" uid="uid://7aye5i2307ng" path="res://Player/player.tscn" id="1_n0qsc"]
-[ext_resource type="Texture2D" uid="uid://cv3i6ob8dskt7" path="res://Assets/Skyboxes/AllSkyFree_Sky_ColdSunset_Equirect.png" id="2_dilhk"]
 [ext_resource type="PackedScene" uid="uid://chjl1c7c077bb" path="res://Enemies/enemy.tscn" id="3_3mhv4"]
+[ext_resource type="Texture2D" uid="uid://dby8ybfybb54k" path="res://Assets/Skyboxes/AllSkyFree_Sky_EpicGloriousPink_Equirect.png" id="3_rf6l5"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_f1bjn"]
 
@@ -17,7 +17,7 @@ material = SubResource("ORMMaterial3D_e0uct")
 [sub_resource type="BoxShape3D" id="BoxShape3D_m6ohi"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_f6v34"]
-panorama = ExtResource("2_dilhk")
+panorama = ExtResource("3_rf6l5")
 
 [sub_resource type="Sky" id="Sky_f6v34"]
 sky_material = SubResource("PanoramaSkyMaterial_f6v34")
@@ -51,7 +51,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.0011044, 0)
 shape = SubResource("WorldBoundaryShape3D_f1bjn")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=1479986283]
-transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)
 mesh = SubResource("PlaneMesh_sd27u")
 
 [node name="Box" type="StaticBody3D" parent="." unique_id=1630192637]
