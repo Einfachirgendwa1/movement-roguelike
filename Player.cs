@@ -1,17 +1,33 @@
 using Godot;
+using MovementRoguelike3D.Components;
 using static MovementRoguelike3D.Settings;
 
 namespace MovementRoguelike3D;
 
 public partial class Player : CharacterBody3D {
     private Node3D? cameraPivot;
+    private RayCast3D? rayCast;
+    private ColorRect? crosshair;
 
     public override void _Ready() {
         Input.SetMouseMode(Input.MouseModeEnum.Captured);
         cameraPivot = GetNode<Node3D>("Camera3D");
+        rayCast = GetNode<RayCast3D>("Camera3D/RayCast3D");
+        crosshair = GetNode<ColorRect>("Crosshair");
     }
 
     public override void _PhysicsProcess(double delta) {
+        #region Attack Detection
+
+        if (Input.IsActionJustPressed("Attack")) {
+            if (rayCast!.GetCollider() is IHealth objectWithHp) {
+                objectWithHp.Health -= GetMeleeDamage();
+                Velocity = new Vector3(Velocity.X, -2 * Velocity.Y, Velocity.Z);
+            }
+        }
+
+        #endregion
+
         #region Movement
 
         bool onGround = IsOnFloor();
@@ -37,7 +53,6 @@ public partial class Player : CharacterBody3D {
         float airMult = !onGround ? AirMoveMultiplier : 1;
         Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
         Velocity += direction * MoveStrength * sprintMult * airMult;
-        GD.Print(Velocity.Length());
 
         #endregion
 
@@ -55,6 +70,8 @@ public partial class Player : CharacterBody3D {
         #endregion
     }
 
+    private float GetMeleeDamage() => Velocity.Length();
+
     public override void _Process(double delta) {
         #region Escape Input
 
@@ -64,6 +81,12 @@ public partial class Player : CharacterBody3D {
                 ? Input.MouseModeEnum.Captured
                 : Input.MouseModeEnum.Visible);
         }
+
+        #endregion
+
+        #region Change Crosshair Color when targeting Enemy (Debug)
+
+        crosshair!.Color = rayCast!.IsColliding() ? Colors.Blue : Colors.White;
 
         #endregion
     }

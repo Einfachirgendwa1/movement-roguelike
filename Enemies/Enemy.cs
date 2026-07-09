@@ -17,11 +17,6 @@ public partial class Enemy : CharacterBody3D, IHealth {
         #endregion
     }
 
-    public override void _Process(double delta) {
-        // just for debug purposes
-        Health -= 0.2f;
-    }
-
     #region Health
 
     private float health;
