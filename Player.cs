@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using Godot;
 using MovementRoguelike3D.Components;
-using MovementRoguelike3D.Coroutines;
 using static MovementRoguelike3D.Prelude;
 
 namespace MovementRoguelike3D;
@@ -114,7 +112,16 @@ public partial class Player : CharacterBody3D {
         crosshair!.Color = rayCast!.IsColliding() ? Colors.Blue : Colors.White;
 
         #endregion
+
+        #region Lock Camera while Wallrunning
+
+        if (IsOnWall() && WallDot() < 0) {
+            RotateY(Forward().SignedAngleTo(WallRunClampedDirection(), Vector3.Up) * 0.13f);
+        }
+
+        #endregion
     }
+
 
     private void UpdateFov(float newFov) {
         camera!.Fov = newFov;
@@ -124,20 +131,29 @@ public partial class Player : CharacterBody3D {
         #region Camera Rotation with Mouse
 
         if (@event is InputEventMouseMotion mouseMotion && Input.GetMouseMode() == Input.MouseModeEnum.Captured) {
+            bool isOnWall = IsOnWall();
+
+            float wallNormalIntersect = WallDot();
             RotateY(-mouseMotion.Relative.X * MouseSensitivity);
 
-            if (camera != null) {
-                Vector3 rotation = camera!.Rotation;
-                rotation.X -= mouseMotion.Relative.Y * MouseSensitivity;
-                rotation.X = Mathf.Clamp(
-                    rotation.X,
-                    Mathf.DegToRad(MinPitch),
-                    Mathf.DegToRad(MaxPitch)
-                );
-                camera.Rotation = rotation;
+            if (isOnWall && WallDot() < wallNormalIntersect && wallNormalIntersect <= 0) {
+                RotateY(mouseMotion.Relative.X * MouseSensitivity);
             }
+
+            Vector3 rotation = camera!.Rotation;
+            rotation.X -= mouseMotion.Relative.Y * MouseSensitivity;
+            rotation.X = Mathf.Clamp(
+                rotation.X,
+                Mathf.DegToRad(MinPitch),
+                Mathf.DegToRad(MaxPitch)
+            );
+            camera.Rotation = rotation;
         }
 
         #endregion
     }
+
+    private Vector3 Forward() => camera!.GlobalBasis * Vector3.Forward;
+    private float WallDot() => IsOnWall() ? Forward().Dot(GetWallNormal()) : 0;
+    private Vector3 WallRunClampedDirection() => Forward().Slide(GetWallNormal());
 }
