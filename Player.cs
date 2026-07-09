@@ -5,6 +5,8 @@ using static MovementRoguelike3D.Settings;
 namespace MovementRoguelike3D;
 
 public partial class Player : CharacterBody3D {
+    #region Initialization
+
     private Camera3D? camera;
     private RayCast3D? rayCast;
     private ColorRect? crosshair;
@@ -22,11 +24,21 @@ public partial class Player : CharacterBody3D {
         OnFovChange -= UpdateFov;
     }
 
+    #endregion
+
     public override void _PhysicsProcess(double delta) {
         AttackDetection();
 
+        #region Collision Detection and Gravity
+
         bool onGround = IsOnFloor();
-        Velocity += GetGravity();
+        bool onWall = IsOnWall();
+        float wallRunningGravity = onWall ? WallRunningGravity(Velocity.Length()) : 1;
+
+        Vector3 gravity = GetGravity() * wallRunningGravity;
+        Velocity += gravity;
+
+        #endregion
 
         #region Horizontal Movement
 
@@ -55,6 +67,11 @@ public partial class Player : CharacterBody3D {
 
         if (Input.IsActionPressed("Jump") && onGround) {
             Velocity += new Vector3(0, JumpImpulse, 0);
+        }
+
+        if (Input.IsActionJustPressed("Jump") && onWall) {
+            Vector3 wallJumpDirection = GetWallNormal().Normalized() + Vector3.Up;
+            Velocity += wallJumpDirection.Normalized() * JumpImpulse;
         }
 
         #endregion

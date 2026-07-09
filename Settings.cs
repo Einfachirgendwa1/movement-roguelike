@@ -10,6 +10,7 @@ public partial class Settings : Node2D {
     public static float AirMoveMultiplier => 0.3f;
     public static float JumpImpulse => 20f;
     public static float SprintMult => 1.5f;
+    public static Func<float, float> WallRunningGravity => runSpeed => Mathf.Min(1f, 1f / runSpeed);
 
     #endregion
 

@@ -28,7 +28,7 @@ sky = SubResource("Sky_f6v34")
 ambient_light_color = Color(1, 1, 1, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_f1bjn"]
-size = Vector3(16.4, 20.7, 1)
+size = Vector3(100, 20.7, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_f1bjn"]
 
@@ -76,5 +76,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9571552, 8.362294)
 shape = SubResource("BoxShape3D_f1bjn")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Wall" unique_id=332688414]
-transform = Transform3D(16.46602, 0, 0, 0, 20.714222, 0, 0, 0, 0.9792307, 0, 0, 0)
+transform = Transform3D(100, 0, 0, 0, 20.714, 0, 0, 0, 0.979, 0, 0, 0)
 mesh = SubResource("BoxMesh_f1bjn")
