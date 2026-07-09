@@ -64,7 +64,8 @@ mesh = SubResource("BoxMesh_f6v34")
 shape = SubResource("BoxShape3D_m6ohi")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=1183141172]
-transform = Transform3D(1, 0, 0, 0, 0.91128206, 0.41178277, 0, -0.41178277, 0.91128206, 0, 3.2839274, 0)
+transform = Transform3D(0.9784224, 0.06682992, -0.19550823, 0.17002833, 0.27717772, 0.94565487, 0.117388554, -0.9584918, 0.2598339, 0, 3.2839274, 0)
+shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=82786932]
 environment = SubResource("Environment_f1bjn")
