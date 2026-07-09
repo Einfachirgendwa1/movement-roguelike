@@ -27,6 +27,11 @@ background_mode = 2
 sky = SubResource("Sky_f6v34")
 ambient_light_color = Color(1, 1, 1, 1)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_f1bjn"]
+size = Vector3(16.4, 20.7, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_f1bjn"]
+
 [node name="Level 1" type="Node3D" unique_id=449401401]
 
 [node name="Enemies" type="Node3D" parent="." unique_id=876360838]
@@ -63,3 +68,13 @@ transform = Transform3D(1, 0, 0, 0, 0.91128206, 0.41178277, 0, -0.41178277, 0.91
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=82786932]
 environment = SubResource("Environment_f1bjn")
+
+[node name="Wall" type="StaticBody3D" parent="." unique_id=512170522]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9571552, 8.362294)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall" unique_id=1562915640]
+shape = SubResource("BoxShape3D_f1bjn")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Wall" unique_id=332688414]
+transform = Transform3D(16.46602, 0, 0, 0, 20.714222, 0, 0, 0, 0.9792307, 0, 0, 0)
+mesh = SubResource("BoxMesh_f1bjn")

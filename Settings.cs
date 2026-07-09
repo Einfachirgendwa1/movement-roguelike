@@ -1,6 +1,9 @@
-﻿namespace MovementRoguelike3D;
+﻿using System;
+using Godot;
 
-public static class Settings {
+namespace MovementRoguelike3D;
+
+public partial class Settings : Node2D {
     #region Abilities
 
     public static float MoveStrength => 1.5f;
@@ -22,6 +25,21 @@ public static class Settings {
 
     public static float GroundDrag => 0.80f;
     public static float AirDrag => 0.95f;
+
+    #endregion
+
+    #region Visual
+
+    private static float fov = 90;
+    public static event Action<float>? OnFovChange;
+
+    public static float Fov {
+        get => fov;
+        set {
+            fov = value;
+            OnFovChange?.Invoke(fov);
+        }
+    }
 
     #endregion
 }

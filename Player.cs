@@ -5,32 +5,25 @@ using static MovementRoguelike3D.Settings;
 namespace MovementRoguelike3D;
 
 public partial class Player : CharacterBody3D {
-    private Node3D? cameraPivot;
+    private Camera3D? camera;
     private RayCast3D? rayCast;
     private ColorRect? crosshair;
 
     public override void _Ready() {
         Input.SetMouseMode(Input.MouseModeEnum.Captured);
-        cameraPivot = GetNode<Node3D>("Camera3D");
+        camera = GetNode<Camera3D>("Camera3D");
         rayCast = GetNode<RayCast3D>("Camera3D/RayCast3D");
         crosshair = GetNode<ColorRect>("Crosshair");
+
+        OnFovChange += UpdateFov;
+    }
+
+    public override void _ExitTree() {
+        OnFovChange -= UpdateFov;
     }
 
     public override void _PhysicsProcess(double delta) {
-        #region Attack Detection
-
-        if (Input.IsActionJustPressed("Attack") && rayCast!.GetCollider() is IHealth objectWithHp) {
-            objectWithHp.Health -= GetMeleeDamage();
-
-            if (objectWithHp.IsAlive) {
-                Velocity = Velocity.Bounce(Vector3.Forward);
-            } else {
-                float yVelocity = Mathf.Max(-2 * Velocity.Y, JumpImpulse);
-                Velocity = new Vector3(Velocity.X, yVelocity, Velocity.Z);
-            }
-        }
-
-        #endregion
+        AttackDetection();
 
         bool onGround = IsOnFloor();
         Velocity += GetGravity();
@@ -70,6 +63,19 @@ public partial class Player : CharacterBody3D {
         MoveAndSlide();
     }
 
+    private void AttackDetection() {
+        if (Input.IsActionJustPressed("Attack") && rayCast!.GetCollider() is IHealth objectWithHp) {
+            objectWithHp.Health -= GetMeleeDamage();
+
+            if (objectWithHp.IsAlive) {
+                Velocity = Velocity.Bounce(Vector3.Forward);
+            } else {
+                float yVelocity = Mathf.Max(-2 * Velocity.Y, JumpImpulse);
+                Velocity = new Vector3(Velocity.X, yVelocity, Velocity.Z);
+            }
+        }
+    }
+
     private float GetMeleeDamage() => Velocity.Length() * 2;
 
     public override void _Process(double delta) {
@@ -91,21 +97,25 @@ public partial class Player : CharacterBody3D {
         #endregion
     }
 
+    private void UpdateFov(float newFov) {
+        camera!.Fov = newFov;
+    }
+
     public override void _Input(InputEvent @event) {
         #region Camera Rotation with Mouse
 
         if (@event is InputEventMouseMotion mouseMotion && Input.GetMouseMode() == Input.MouseModeEnum.Captured) {
             RotateY(-mouseMotion.Relative.X * MouseSensitivity);
 
-            if (cameraPivot != null) {
-                Vector3 rotation = cameraPivot!.Rotation;
+            if (camera != null) {
+                Vector3 rotation = camera!.Rotation;
                 rotation.X -= mouseMotion.Relative.Y * MouseSensitivity;
                 rotation.X = Mathf.Clamp(
                     rotation.X,
                     Mathf.DegToRad(MinPitch),
                     Mathf.DegToRad(MaxPitch)
                 );
-                cameraPivot.Rotation = rotation;
+                camera.Rotation = rotation;
             }
         }
 
