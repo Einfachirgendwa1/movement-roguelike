@@ -14,6 +14,16 @@ public partial class Enemy : CharacterBody3D, IHealth {
         #endregion
     }
 
+    public override void _PhysicsProcess(double delta) {
+        #region Death check
+
+        if (Health <= 0) {
+            QueueFree();
+        }
+
+        #endregion
+    }
+
     #region Health
 
     private float health;
@@ -33,14 +43,4 @@ public partial class Enemy : CharacterBody3D, IHealth {
     }
 
     #endregion
-
-    public override void _PhysicsProcess(double delta) {
-        #region Death check
-
-        if (Health <= 0) {
-            QueueFree();
-        }
-
-        #endregion
-    }
 }
