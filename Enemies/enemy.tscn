@@ -22,3 +22,4 @@ shape = SubResource("CapsuleShape3D_f1bjn")
 mesh = SubResource("CapsuleMesh_f1bjn")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1783248674]
+path_height_offset = -1.0

@@ -8,7 +8,7 @@
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_l8h54"]
 
-[node name="Player" type="CharacterBody3D" unique_id=212192737]
+[node name="Player" type="CharacterBody3D" unique_id=212192737 groups=["player"]]
 script = ExtResource("1_l8h54")
 
 [node name="Crosshair" type="ColorRect" parent="." unique_id=1105687345]
