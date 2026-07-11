@@ -65,6 +65,8 @@ shape = SubResource("BoxShape3D_m6ohi")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=1183141172]
 transform = Transform3D(0.9784224, 0.06682992, -0.19550823, 0.17002833, 0.27717772, 0.94565487, 0.117388554, -0.9584918, 0.2598339, 0, 3.2839274, 0)
+light_color = Color(1, 0.92156863, 0.78039217, 1)
+light_energy = 3.0
 shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=82786932]
