@@ -7,7 +7,9 @@ public static class Prelude {
     public static float AirMoveMultiplier => 0.3f;
     public static float JumpImpulse => 20f;
     public static float SprintMult => 1.5f;
+    public static float WallJumpMultiplier => 1.5f;
     public static Func<float, float> WallRunningGravity => runSpeed => Mathf.Min(1f, 1f / runSpeed);
+    public static Vector3 WallJumpDirection(Player.Player player) => player.GetWallNormal().Normalized() + Vector3.Up;
 
     #endregion
 

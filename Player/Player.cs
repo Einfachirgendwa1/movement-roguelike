@@ -70,8 +70,7 @@ public partial class Player : CharacterBody3D {
         }
 
         if (Input.IsActionJustPressed("Jump") && onWall) {
-            Vector3 wallJumpDirection = GetWallNormal().Normalized() + Vector3.Up;
-            Velocity += wallJumpDirection.Normalized() * JumpImpulse;
+            Velocity += WallJumpDirection(this).Normalized() * JumpImpulse * WallJumpMultiplier;
         }
 
         #endregion
