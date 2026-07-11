@@ -5,9 +5,10 @@ public static class Prelude {
 
     public static float MoveStrength => 1.5f;
     public static float AirMoveMultiplier => 0.3f;
-    public static float JumpImpulse => 20f;
-    public static float SprintMult => 1.5f;
+    public static float JumpImpulse => 15f;
+    public static float SprintMult => 2f;
     public static float WallJumpMultiplier => 1.5f;
+    public static float SprintAccelSpeedCap => 9f;
     public static Func<float, float> WallRunningGravity => runSpeed => Mathf.Min(1f, 1f / runSpeed);
     public static Vector3 WallJumpDirection(Player.Player player) => player.GetWallNormal().Normalized() + Vector3.Up;
 
@@ -25,6 +26,9 @@ public static class Prelude {
 
     public static float GroundDrag => 0.80f;
     public static float AirDrag => 0.95f;
+
+    public static float SprintDrag(float x, float drag) =>
+        Mathf.Lerp(1, drag, Mathf.Clamp((x - 2) * 0.05f, 0f, 1f));
 
     #endregion
 

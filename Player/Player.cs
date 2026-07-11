@@ -6,7 +6,9 @@ public partial class Player : CharacterBody3D {
     private Camera3D? camera;
     private RayCast3D? rayCast;
     private ColorRect? crosshair;
+    private TextEdit? textEdit;
     private bool mouseMovementLocked;
+    private float timeSpentSprinting;
 
     private const float AttackWindowDuration = 0.15f;
     private bool isAttacking;
@@ -16,6 +18,7 @@ public partial class Player : CharacterBody3D {
         camera = GetNode<Camera3D>("Camera3D");
         rayCast = GetNode<RayCast3D>("Camera3D/RayCast3D");
         crosshair = GetNode<ColorRect>("Crosshair");
+        textEdit = GetNode<TextEdit>("TextEdit");
 
         OnFovChange += UpdateFov;
     }
@@ -57,9 +60,16 @@ public partial class Player : CharacterBody3D {
 
         #endregion
 
-        float airMult = !onGround ? AirMoveMultiplier : 1;
         Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
+        Vector3 horizontalVelocity = new(Velocity.X, 0, Velocity.Z);
+        float speed = horizontalVelocity.Length();
+        float airMult = !onGround ? AirMoveMultiplier : 1;
         Velocity += direction * MoveStrength * sprintMult * airMult;
+
+        if (sprinting && speed >= SprintAccelSpeedCap || !onGround) {
+            Vector3 horizontalOverride = new Vector3(Velocity.X, 0, Velocity.Z).Normalized() * speed;
+            Velocity = new Vector3(horizontalOverride.X, Velocity.Y, horizontalOverride.Z);
+        }
 
         #endregion
 
@@ -67,15 +77,33 @@ public partial class Player : CharacterBody3D {
 
         if (Input.IsActionPressed("Jump") && onGround) {
             Velocity += new Vector3(0, JumpImpulse, 0);
-        }
-
-        if (Input.IsActionJustPressed("Jump") && onWall) {
+        } else if (Input.IsActionJustPressed("Jump") && onWall) {
             Velocity += WallJumpDirection(this).Normalized() * JumpImpulse * WallJumpMultiplier;
+            timeSpentSprinting = 0f;
         }
 
         #endregion
 
-        Velocity *= onGround ? GroundDrag : AirDrag;
+        #region Drag
+
+        float mediumDrag = onGround ? GroundDrag : AirDrag;
+
+        if (sprinting) {
+            if (onGround || onWall) {
+                timeSpentSprinting += (float)delta;
+            }
+
+            float sprintDrag = SprintDrag(timeSpentSprinting, mediumDrag);
+            Velocity = new Vector3(Velocity.X * sprintDrag, Velocity.Y * mediumDrag, Velocity.Z * sprintDrag);
+        } else {
+            timeSpentSprinting -= (float)delta;
+            Velocity *= mediumDrag;
+        }
+
+        #endregion
+
+        textEdit!.Text = $"Horizontal Speed: {new Vector3(Velocity.X, 0, Velocity.Z).Length()}\n";
+        textEdit.Text += $"Vertical Speed: {Velocity.Y}";
         MoveAndSlide();
     }
 
@@ -163,6 +191,7 @@ public partial class Player : CharacterBody3D {
     private void AttackDetection() {
         if (Input.IsActionJustPressed("Attack") && !isAttacking) {
             StartCoroutine(AttackCoroutine(GetMeleeDamage()));
+            timeSpentSprinting = 0;
         }
     }
 

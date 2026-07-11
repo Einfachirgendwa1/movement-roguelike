@@ -6,6 +6,8 @@
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_f1bjn"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_l8h54"]
+
 [node name="Player" type="CharacterBody3D" unique_id=212192737]
 script = ExtResource("1_l8h54")
 
@@ -37,3 +39,9 @@ current = true
 [node name="RayCast3D" type="RayCast3D" parent="Camera3D" unique_id=817645748]
 target_position = Vector3(0, 0, -2)
 collision_mask = 2
+
+[node name="TextEdit" type="TextEdit" parent="." unique_id=1622848728]
+offset_right = 490.0
+offset_bottom = 293.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_l8h54")

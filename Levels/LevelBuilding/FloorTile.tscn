@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://bqm6h1rr1vg6n"]
+
+[ext_resource type="Material" uid="uid://c0yugrjg0njxb" path="res://Levels/LevelBuilding/floor_material.tres" id="1_dw12h"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_f1bjn"]
+material = ExtResource("1_dw12h")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hnco5"]
+
+[node name="FloorTile" type="StaticBody3D" unique_id=1822606129]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=4968578]
+mesh = SubResource("BoxMesh_f1bjn")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1437642834]
+shape = SubResource("BoxShape3D_hnco5")
