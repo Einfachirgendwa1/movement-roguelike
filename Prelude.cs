@@ -39,5 +39,8 @@ public static class Prelude {
         }
     }
 
+    public const float WallTiltAngle = 15f; // Grad, wie stark gekippt wird
+    public const float WallTiltSpeed = 8f; // wie schnell rein/raus gelerpt wird
+
     #endregion
 }

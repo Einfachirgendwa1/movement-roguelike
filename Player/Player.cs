@@ -1,158 +1,200 @@
 namespace MovementRoguelike3D.Player;
 
 public partial class Player : CharacterBody3D {
-    #region Initialization
+	#region Initialization
 
     private Camera3D? camera;
     private RayCast3D? rayCast;
     private ColorRect? crosshair;
     private bool mouseMovementLocked;
 
-    public override void _Ready() {
-        Input.SetMouseMode(Input.MouseModeEnum.Captured);
-        camera = GetNode<Camera3D>("Camera3D");
-        rayCast = GetNode<RayCast3D>("Camera3D/RayCast3D");
-        crosshair = GetNode<ColorRect>("Crosshair");
+	private const float AttackWindowDuration = 0.15f;
+	private bool isAttacking;
 
-        OnFovChange += UpdateFov;
-    }
+	public override void _Ready() {
+		Input.SetMouseMode(Input.MouseModeEnum.Captured);
+		camera = GetNode<Camera3D>("Camera3D");
+		rayCast = GetNode<RayCast3D>("Camera3D/RayCast3D");
+		crosshair = GetNode<ColorRect>("Crosshair");
 
-    public override void _ExitTree() {
-        OnFovChange -= UpdateFov;
-    }
+		OnFovChange += UpdateFov;
+	}
 
-    #endregion
+	public override void _ExitTree() {
+		OnFovChange -= UpdateFov;
+	}
 
-    public override void _PhysicsProcess(double delta) {
-        AttackDetection();
+	#endregion
 
-        #region Collision Detection and Gravity
+	public override void _PhysicsProcess(double delta) {
+		AttackDetection();
 
-        bool onGround = IsOnFloor();
-        bool onWall = IsOnWall();
-        float wallRunningGravity = onWall ? WallRunningGravity(Velocity.Length()) : 1;
+		#region Collision Detection and Gravity
 
-        Vector3 gravity = GetGravity() * wallRunningGravity;
-        Velocity += gravity;
+		bool onGround = IsOnFloor();
+		bool onWall = IsOnWall();
+		float wallRunningGravity = onWall ? WallRunningGravity(Velocity.Length()) : 1;
 
-        #endregion
+		Vector3 gravity = GetGravity() * wallRunningGravity;
+		Velocity += gravity;
 
-        #region Horizontal Movement
+		#endregion
 
-        #region Read Input
+		#region Horizontal Movement
 
-        int left = Input.IsActionPressed("Left") ? 1 : 0;
-        int right = Input.IsActionPressed("Right") ? 1 : 0;
-        int xAxis = right - left;
+		#region Read Input
 
-        int forward = Input.IsActionPressed("Forward") ? 1 : 0;
-        int backward = Input.IsActionPressed("Backward") ? 1 : 0;
-        int zAxis = backward - forward;
+		int left = Input.IsActionPressed("Left") ? 1 : 0;
+		int right = Input.IsActionPressed("Right") ? 1 : 0;
+		int xAxis = right - left;
 
-        bool sprinting = Input.IsActionPressed("Sprint");
-        float sprintMult = sprinting ? SprintMult : 1;
+		int forward = Input.IsActionPressed("Forward") ? 1 : 0;
+		int backward = Input.IsActionPressed("Backward") ? 1 : 0;
+		int zAxis = backward - forward;
 
-        #endregion
+		bool sprinting = Input.IsActionPressed("Sprint");
+		float sprintMult = sprinting ? SprintMult : 1;
 
-        float airMult = !onGround ? AirMoveMultiplier : 1;
-        Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
-        Velocity += direction * MoveStrength * sprintMult * airMult;
+		#endregion
 
-        #endregion
+		float airMult = !onGround ? AirMoveMultiplier : 1;
+		Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
+		Velocity += direction * MoveStrength * sprintMult * airMult;
 
-        #region Vertical Movement
+		#endregion
 
-        if (Input.IsActionPressed("Jump") && onGround) {
-            Velocity += new Vector3(0, JumpImpulse, 0);
-        }
+		#region Vertical Movement
 
-        if (Input.IsActionJustPressed("Jump") && onWall) {
-            Vector3 wallJumpDirection = GetWallNormal().Normalized() + Vector3.Up;
-            Velocity += wallJumpDirection.Normalized() * JumpImpulse;
-        }
+		if (Input.IsActionPressed("Jump") && onGround) {
+			Velocity += new Vector3(0, JumpImpulse, 0);
+		}
 
-        #endregion
+		if (Input.IsActionJustPressed("Jump") && onWall) {
+			Vector3 wallJumpDirection = GetWallNormal().Normalized() + Vector3.Up;
+			Velocity += wallJumpDirection.Normalized() * JumpImpulse;
+		}
 
-        Velocity *= onGround ? GroundDrag : AirDrag;
-        MoveAndSlide();
-    }
+		#endregion
 
-    private void AttackDetection() {
-        if (Input.IsActionJustPressed("Attack") && rayCast!.GetCollider() is IHealth objectWithHp) {
-            objectWithHp.Health -= GetMeleeDamage();
-
-            if (objectWithHp.IsAlive) {
-                Velocity = Velocity.Bounce(Vector3.Forward);
-            } else {
-                float yVelocity = Mathf.Max(-2 * Velocity.Y, JumpImpulse);
-                Velocity = new Vector3(Velocity.X, yVelocity, Velocity.Z);
-            }
-        }
-    }
-
-    private float GetMeleeDamage() => Velocity.Length() * 2;
-
-    public override void _Process(double delta) {
-        #region Escape Input
-
-        // This should later open a pause menu
-        if (Input.IsActionJustPressed("Escape")) {
-            Input.SetMouseMode(Input.GetMouseMode() == Input.MouseModeEnum.Visible
-                ? Input.MouseModeEnum.Captured
-                : Input.MouseModeEnum.Visible);
-        }
-
-        #endregion
-
-        #region Change Crosshair Color when targeting Enemy (Debug)
-
-        crosshair!.Color = rayCast!.IsColliding() ? Colors.Blue : Colors.White;
-
-        #endregion
-
-        #region Lock Camera while Wallrunning
-
-        if (IsOnWall() && WallDot() < 0) {
-            StartCoroutine(WallRunCam());
-        }
-
-        #endregion
-    }
+		Velocity *= onGround ? GroundDrag : AirDrag;
+		MoveAndSlide();
+	}
 
 
-    private void UpdateFov(float newFov) {
-        camera!.Fov = newFov;
-    }
+	#region Attack
 
-    public override void _Input(InputEvent @event) {
-        #region Camera Rotation with Mouse
+	private void AttackDetection() {
+		if (Input.IsActionJustPressed("Attack") && !isAttacking) {
+			StartCoroutine(AttackCoroutine(GetMeleeDamage()));
+		}
+	}
+
+	private IEnumerator<Interrupt?> AttackCoroutine(float damage) {
+		isAttacking = true;
+
+		HashSet<IHealth> alreadyHit = new();
+		NextPhysicsFrame waiter = new();
+		double elapsed = 0;
+
+		while (elapsed < AttackWindowDuration) {
+			if (rayCast!.GetCollider() is IHealth objectWithHp && alreadyHit.Add(objectWithHp)) {
+				objectWithHp.Health -= damage;
+				if (objectWithHp.IsAlive) {
+					//Velocity = Velocity.Bounce(Vector3.Forward);
+				} else {
+					float yVelocity = Mathf.Max(-2 * Velocity.Y, JumpImpulse);
+					Velocity = new Vector3(Velocity.X, yVelocity, Velocity.Z);
+				}
+			}
+
+			yield return waiter;
+			elapsed += waiter.Delta;
+		}
+
+		isAttacking = false;
+	}
+	private float GetMeleeDamage() => Velocity.Length() * 2;
+
+	#endregion
+
+	public override void _Process(double delta) {
+		#region Escape Input
+
+		// This should later open a pause menu
+		if (Input.IsActionJustPressed("Escape")) {
+			Input.SetMouseMode(Input.GetMouseMode() == Input.MouseModeEnum.Visible
+				? Input.MouseModeEnum.Captured
+				: Input.MouseModeEnum.Visible);
+		}
+
+		#endregion
+
+		#region Change Crosshair Color when targeting Enemy (Debug)
+
+		crosshair!.Color = rayCast!.IsColliding() ? Colors.Blue : Colors.White;
+
+		#endregion
+
+		#region Lock Camera while Wallrunning
+
+		if (IsOnWall() && !IsOnFloor() && WallDot() < 0) {
+			RotateY(Forward().SignedAngleTo(WallRunClampedDirection(), Vector3.Up) * 0.13f);
+		}
+
+		#endregion
+
+		#region Camera Tilt while Wallrunning
+
+		float targetTilt = 0f;
+
+		if (IsOnWall() && !IsOnFloor()) {
+			// Vorzeichen bestimmt, ob die Wand links oder rechts ist
+			float wallSide = Forward().Cross(Vector3.Up).Dot(GetWallNormal())*-1;
+			targetTilt = Mathf.Sign(wallSide) * WallTiltAngle;
+		}
+
+		Vector3 camRotation = camera!.Rotation;
+		camRotation.Z = Mathf.LerpAngle(camRotation.Z, Mathf.DegToRad(targetTilt), (float)delta * WallTiltSpeed);
+		camera.Rotation = camRotation;
+
+		#endregion
+	}
+
+
+	private void UpdateFov(float newFov) {
+		camera!.Fov = newFov;
+	}
+
+	public override void _Input(InputEvent @event) {
+		#region Camera Rotation with Mouse
 
         bool inGame = Input.GetMouseMode() == Input.MouseModeEnum.Captured;
         if (@event is InputEventMouseMotion mouseMotion && inGame && !mouseMovementLocked) {
             bool isOnWall = IsOnWall();
 
-            float wallNormalIntersect = WallDot();
-            GD.Print("Pre movement ", WallDot());
-            RotateY(-mouseMotion.Relative.X * MouseSensitivity);
+			float wallNormalIntersect = WallDot();
+			RotateY(-mouseMotion.Relative.X * MouseSensitivity);
 
-            if (isOnWall && WallDot() < wallNormalIntersect && WallDot() <= 0) {
-                RotateY(mouseMotion.Relative.X * MouseSensitivity);
-                GD.Print("Reset back to ", WallDot());
-            }
+			if (isOnWall && WallDot() < wallNormalIntersect && wallNormalIntersect <= 0) {
+				RotateY(mouseMotion.Relative.X * MouseSensitivity);
+			}
 
-            Vector3 rotation = camera!.Rotation;
-            rotation.X -= mouseMotion.Relative.Y * MouseSensitivity;
-            rotation.X = Mathf.Clamp(
-                rotation.X,
-                Mathf.DegToRad(MinPitch),
-                Mathf.DegToRad(MaxPitch)
-            );
-            camera.Rotation = rotation;
-        }
+			Vector3 rotation = camera!.Rotation;
+			rotation.X -= mouseMotion.Relative.Y * MouseSensitivity;
+			rotation.X = Mathf.Clamp(
+				rotation.X,
+				Mathf.DegToRad(MinPitch),
+				Mathf.DegToRad(MaxPitch)
+			);
+			camera.Rotation = rotation;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 
+	private Vector3 Forward() => camera!.GlobalBasis * Vector3.Forward;
+	private float WallDot() => IsOnWall() ? Forward().Dot(GetWallNormal()) : 0;
+	private Vector3 WallRunClampedDirection() => Forward().Slide(GetWallNormal());
     private IEnumerator<Interrupt?> WallRunCam() {
         if (WallDot() >= 0) yield break;
         mouseMovementLocked = true;
@@ -169,8 +211,4 @@ public partial class Player : CharacterBody3D {
         mouseMovementLocked = false;
         GD.Print($"Unlocked at {WallDot()}");
     }
-
-    private Vector3 Forward() => camera!.GlobalBasis * Vector3.Forward;
-    private float WallDot() => IsOnWall() ? Forward().Dot(GetWallNormal()) : 0;
-    private Vector3 WallRunClampedDirection() => Forward().Slide(GetWallNormal());
 }
