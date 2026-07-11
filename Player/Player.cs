@@ -1,6 +1,31 @@
 namespace MovementRoguelike3D.Player;
 
 public partial class Player : CharacterBody3D {
+    #region Initialization
+
+    private Camera3D? camera;
+    private RayCast3D? rayCast;
+    private ColorRect? crosshair;
+    private bool mouseMovementLocked;
+
+    private const float AttackWindowDuration = 0.15f;
+    private bool isAttacking;
+
+    public override void _Ready() {
+        Input.SetMouseMode(Input.MouseModeEnum.Captured);
+        camera = GetNode<Camera3D>("Camera3D");
+        rayCast = GetNode<RayCast3D>("Camera3D/RayCast3D");
+        crosshair = GetNode<ColorRect>("Crosshair");
+
+        OnFovChange += UpdateFov;
+    }
+
+    public override void _ExitTree() {
+        OnFovChange -= UpdateFov;
+    }
+
+    #endregion
+
     public override void _PhysicsProcess(double delta) {
         AttackDetection();
 
@@ -133,32 +158,6 @@ public partial class Player : CharacterBody3D {
     private Vector3 Forward() => camera!.GlobalBasis * Vector3.Forward;
     private float WallDot() => IsOnWall() ? Forward().Dot(GetWallNormal()) : 0;
     private Vector3 WallRunClampedDirection() => Forward().Slide(GetWallNormal());
-
-    #region Initialization
-
-    private Camera3D? camera;
-    private RayCast3D? rayCast;
-    private ColorRect? crosshair;
-    private bool mouseMovementLocked;
-
-    private const float AttackWindowDuration = 0.15f;
-    private bool isAttacking;
-
-    public override void _Ready() {
-        Input.SetMouseMode(Input.MouseModeEnum.Captured);
-        camera = GetNode<Camera3D>("Camera3D");
-        rayCast = GetNode<RayCast3D>("Camera3D/RayCast3D");
-        crosshair = GetNode<ColorRect>("Crosshair");
-
-        OnFovChange += UpdateFov;
-    }
-
-    public override void _ExitTree() {
-        OnFovChange -= UpdateFov;
-    }
-
-    #endregion
-
 
     #region Attack
 
