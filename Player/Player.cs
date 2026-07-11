@@ -1,8 +1,4 @@
-using Godot;
-using MovementRoguelike3D.Components;
-using static MovementRoguelike3D.Prelude;
-
-namespace MovementRoguelike3D;
+namespace MovementRoguelike3D.Player;
 
 public partial class Player : CharacterBody3D {
     #region Initialization
@@ -10,6 +6,7 @@ public partial class Player : CharacterBody3D {
     private Camera3D? camera;
     private RayCast3D? rayCast;
     private ColorRect? crosshair;
+    private bool mouseMovementLocked;
 
     public override void _Ready() {
         Input.SetMouseMode(Input.MouseModeEnum.Captured);
@@ -116,7 +113,7 @@ public partial class Player : CharacterBody3D {
         #region Lock Camera while Wallrunning
 
         if (IsOnWall() && WallDot() < 0) {
-            RotateY(Forward().SignedAngleTo(WallRunClampedDirection(), Vector3.Up) * 0.13f);
+            StartCoroutine(WallRunCam());
         }
 
         #endregion
@@ -130,14 +127,17 @@ public partial class Player : CharacterBody3D {
     public override void _Input(InputEvent @event) {
         #region Camera Rotation with Mouse
 
-        if (@event is InputEventMouseMotion mouseMotion && Input.GetMouseMode() == Input.MouseModeEnum.Captured) {
+        bool inGame = Input.GetMouseMode() == Input.MouseModeEnum.Captured;
+        if (@event is InputEventMouseMotion mouseMotion && inGame && !mouseMovementLocked) {
             bool isOnWall = IsOnWall();
 
             float wallNormalIntersect = WallDot();
+            GD.Print("Pre movement ", WallDot());
             RotateY(-mouseMotion.Relative.X * MouseSensitivity);
 
-            if (isOnWall && WallDot() < wallNormalIntersect && wallNormalIntersect <= 0) {
+            if (isOnWall && WallDot() < wallNormalIntersect && WallDot() <= 0) {
                 RotateY(mouseMotion.Relative.X * MouseSensitivity);
+                GD.Print("Reset back to ", WallDot());
             }
 
             Vector3 rotation = camera!.Rotation;
@@ -151,6 +151,23 @@ public partial class Player : CharacterBody3D {
         }
 
         #endregion
+    }
+
+    private IEnumerator<Interrupt?> WallRunCam() {
+        if (WallDot() >= 0) yield break;
+        mouseMovementLocked = true;
+        GD.Print("Locked");
+
+        Vector3 target = WallRunClampedDirection();
+        for (int i = 0; i <= 10; i++) {
+            RotateY(Forward().SignedAngleTo(target, Vector3.Up) * 0.13f);
+            yield return new WaitForFrame();
+        }
+
+        RotateY(Forward().SignedAngleTo(target, Vector3.Up) * 1.01f);
+
+        mouseMovementLocked = false;
+        GD.Print($"Unlocked at {WallDot()}");
     }
 
     private Vector3 Forward() => camera!.GlobalBasis * Vector3.Forward;

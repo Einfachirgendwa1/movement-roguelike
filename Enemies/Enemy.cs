@@ -1,6 +1,3 @@
-using Godot;
-using MovementRoguelike3D.Components;
-
 namespace MovementRoguelike3D.Enemies;
 
 public partial class Enemy : CharacterBody3D, IHealth {

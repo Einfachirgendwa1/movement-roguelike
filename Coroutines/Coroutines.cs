@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Godot;
-
-namespace MovementRoguelike3D.Coroutines;
+﻿namespace MovementRoguelike3D.Coroutines;
 
 public partial class Coroutines : Node {
     private static Coroutines? instance;
