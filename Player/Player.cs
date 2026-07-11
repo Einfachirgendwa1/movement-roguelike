@@ -75,7 +75,7 @@ public partial class Player : CharacterBody3D {
 
         #region Lock Camera while Wallrunning
 
-        if (IsOnWall() && !IsOnFloor() && WallDot() < 0) {
+        if (IsOnWallOnly() && WallDot() < 0) {
             RotateY(Forward().SignedAngleTo(WallRunClampedDirection(), Vector3.Up) * 0.13f);
         }
 
