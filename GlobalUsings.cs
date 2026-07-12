@@ -1,5 +1,6 @@
 ﻿global using MovementRoguelike3D.Components;
 global using MovementRoguelike3D.Coroutines;
+global using MovementRoguelike3D.Singletons;
 global using Godot;
 global using System;
 global using System.Collections.Generic;

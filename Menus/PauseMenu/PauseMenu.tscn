@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://bc7slgbgqr4ws"]
+
+[ext_resource type="Script" uid="uid://bot12s5wfex33" path="res://Menus/PauseMenu/PauseMenu.cs" id="1_bic8a"]
+[ext_resource type="PackedScene" uid="uid://lrsptb8an7qq" path="res://Menus/button.tscn" id="1_ia4x7"]
+[ext_resource type="Script" uid="uid://b25naiv4mmycf" path="res://Menus/PauseMenu/Resume.cs" id="2_3gcw4"]
+[ext_resource type="Script" uid="uid://cgbg8d6rw7ob1" path="res://Menus/PauseMenu/SaveAndQuit.cs" id="3_3gcw4"]
+[ext_resource type="Script" uid="uid://bp8igf3mxifdy" path="res://Menus/Options.cs" id="3_64l7g"]
+
+[node name="PauseMenu" type="Control" unique_id=1005282506]
+process_mode = 2
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bic8a")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=456356116]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Resume" parent="VBoxContainer" unique_id=1602207483 instance=ExtResource("1_ia4x7")]
+layout_mode = 2
+text = "RESUME"
+script = ExtResource("2_3gcw4")
+
+[node name="Options" parent="VBoxContainer" unique_id=1940179021 instance=ExtResource("1_ia4x7")]
+layout_mode = 2
+text = "OPTIONS"
+script = ExtResource("3_64l7g")
+
+[node name="SaveAndQuit" parent="VBoxContainer" unique_id=1494729653 instance=ExtResource("1_ia4x7")]
+layout_mode = 2
+text = "SAVE AND QUIT"
+script = ExtResource("3_3gcw4")

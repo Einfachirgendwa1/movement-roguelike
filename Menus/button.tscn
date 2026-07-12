@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://lrsptb8an7qq"]
+
+[ext_resource type="Theme" uid="uid://cdobvadiwd6d5" path="res://Menus/main_buttons_theme.tres" id="1_64rct"]
+[ext_resource type="StyleBox" uid="uid://bsxu3gdk0d8tu" path="res://Menus/main_buttons_style_box.tres" id="2_rnvuy"]
+
+[node name="Button" type="Button" unique_id=1602207483]
+theme = ExtResource("1_64rct")
+theme_override_styles/normal = ExtResource("2_rnvuy")

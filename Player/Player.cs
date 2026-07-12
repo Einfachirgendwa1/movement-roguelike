@@ -1,3 +1,5 @@
+using MovementRoguelike3D.Menus.PauseMenu;
+
 namespace MovementRoguelike3D.Player;
 
 public partial class Player : CharacterBody3D {
@@ -110,11 +112,15 @@ public partial class Player : CharacterBody3D {
     public override void _Process(double delta) {
         #region Escape Input
 
-        // This should later open a pause menu
         if (Input.IsActionJustPressed("Escape")) {
-            Input.SetMouseMode(Input.GetMouseMode() == Input.MouseModeEnum.Visible
-                ? Input.MouseModeEnum.Captured
-                : Input.MouseModeEnum.Visible);
+            SceneTree sceneTree = GetTree();
+            Input.SetMouseMode(Input.MouseModeEnum.Visible);
+
+            PauseMenu pauseMenu = sceneTree.CurrentScene.GetNode<PauseMenu>("PauseMenu");
+            pauseMenu.Visible = true;
+            pauseMenu.EscapeInputConsumed = true;
+
+            sceneTree.Paused = true;
         }
 
         #endregion

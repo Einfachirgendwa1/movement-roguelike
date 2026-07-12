@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://c5a265nceqii"]
+
+[ext_resource type="PackedScene" uid="uid://lrsptb8an7qq" path="res://Menus/button.tscn" id="1_flrug"]
+[ext_resource type="Script" uid="uid://cbpyhch86201t" path="res://Menus/MainMenu/Continue.cs" id="3_k3ndf"]
+[ext_resource type="Script" uid="uid://y44k23ncpt7o" path="res://Menus/MainMenu/NewGame.cs" id="3_m3rfa"]
+[ext_resource type="Script" uid="uid://bp8igf3mxifdy" path="res://Menus/Options.cs" id="3_ng4bt"]
+[ext_resource type="Script" uid="uid://cnwkvg8cmhdof" path="res://Menus/MainMenu/Quit.cs" id="4_flrug"]
+
+[node name="MainMenu" type="Control" unique_id=656149870]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2071026321]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+alignment = 1
+
+[node name="Continue" parent="VBoxContainer" unique_id=1602207483 instance=ExtResource("1_flrug")]
+layout_mode = 2
+text = "CONTINUE"
+script = ExtResource("3_k3ndf")
+
+[node name="NewGame" parent="VBoxContainer" unique_id=991397327 instance=ExtResource("1_flrug")]
+layout_mode = 2
+text = "NEW GAME"
+script = ExtResource("3_m3rfa")
+
+[node name="Options" parent="VBoxContainer" unique_id=987608584 instance=ExtResource("1_flrug")]
+layout_mode = 2
+text = "OPTIONS"
+script = ExtResource("3_ng4bt")
+
+[node name="Button" parent="VBoxContainer" unique_id=1428570935 instance=ExtResource("1_flrug")]
+layout_mode = 2
+text = "QUIT"
+script = ExtResource("4_flrug")

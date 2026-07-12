@@ -11,13 +11,14 @@ config_version=5
 [application]
 
 config/name="Movement Roguelike 3D"
-run/main_scene="uid://obd7pt4k3aw1"
+run/main_scene="uid://c5a265nceqii"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 Coroutines="*uid://d4m0ev54chy3k"
+GameManager="*uid://bf4t8ifaa43ig"
 
 [display]
 
