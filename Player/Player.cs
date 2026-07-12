@@ -22,11 +22,11 @@ public partial class Player : CharacterBody3D {
         crosshair = GetNode<ColorRect>("Crosshair");
         textEdit = GetNode<TextEdit>("TextEdit");
 
-        OnFovChange += UpdateFov;
+        GetTree().CurrentScene.GetNode<GameState>("GameState").OnFovChange += UpdateFov;
     }
 
     public override void _ExitTree() {
-        OnFovChange -= UpdateFov;
+        State.OnFovChange -= UpdateFov;
     }
 
     #endregion
@@ -51,7 +51,7 @@ public partial class Player : CharacterBody3D {
 
         #region Drag
 
-        float mediumDrag = onGround ? GroundDrag : AirDrag;
+        float mediumDrag = onGround ? State.GroundDrag : State.AirDrag;
 
         if (sprinting && direction != Vector3.Zero) {
             if (onGround || onWall) {
@@ -76,10 +76,10 @@ public partial class Player : CharacterBody3D {
         Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
         Vector3 horizontalVelocity = new(Velocity.X, 0, Velocity.Z);
         float speed = horizontalVelocity.Length();
-        float airMult = !onGround ? AirMoveMultiplier : 1;
-        Velocity += direction * MoveStrength * sprintMult * airMult;
+        float airMult = !onGround ? State.AirMoveMultiplier : 1;
+        Velocity += direction * State.MoveStrength * sprintMult * airMult;
 
-        if (sprinting && speed >= SprintAccelSpeedCap || !onGround) {
+        if (sprinting && speed >= State.SprintAccelSpeedCap || !onGround) {
             Vector3 horizontalOverride = new Vector3(Velocity.X, 0, Velocity.Z).Normalized() * speed;
             Velocity = new Vector3(horizontalOverride.X, Velocity.Y, horizontalOverride.Z);
         }
@@ -97,15 +97,18 @@ public partial class Player : CharacterBody3D {
         int zAxis = backward - forward;
 
         bool sprinting = Input.IsActionPressed("Sprint");
-        float sprintMult = sprinting ? SprintMult : 1;
+        float sprintMult = sprinting ? State.SprintMult : 1;
         return (xAxis, zAxis, sprinting, sprintMult);
     }
 
     private void VerticalMovement(bool onGround, bool onWall) {
         if (Input.IsActionPressed("Jump") && onGround) {
-            Velocity += new Vector3(0, JumpImpulse, 0);
+            Velocity += new Vector3(0, State.JumpImpulse, 0);
         } else if (Input.IsActionJustPressed("Jump") && onWall) {
-            Velocity += WallJumpDirection(this).Normalized() * JumpImpulse * WallJumpMultiplier;
+            Velocity += WallJumpDirection(this).Normalized()
+                        * State.JumpImpulse
+                        * State.WallJumpMultiplier;
+
             timeSpentSprinting = 0f;
         }
     }
@@ -147,11 +150,11 @@ public partial class Player : CharacterBody3D {
         if (IsOnWall() && !IsOnFloor()) {
             // Vorzeichen bestimmt, ob die Wand links oder rechts ist
             float wallSide = Forward().Cross(Vector3.Up).Dot(GetWallNormal()) * -1;
-            targetTilt = Mathf.Sign(wallSide) * WallTiltAngle;
+            targetTilt = Mathf.Sign(wallSide) * State.WallTiltAngle;
         }
 
         Vector3 camRotation = camera!.Rotation;
-        camRotation.Z = Mathf.LerpAngle(camRotation.Z, Mathf.DegToRad(targetTilt), (float)delta * WallTiltSpeed);
+        camRotation.Z = Mathf.LerpAngle(camRotation.Z, Mathf.DegToRad(targetTilt), (float)delta * State.WallTiltSpeed);
         camera.Rotation = camRotation;
 
         #endregion
@@ -170,18 +173,18 @@ public partial class Player : CharacterBody3D {
             bool isOnWall = IsOnWall();
 
             float wallNormalIntersect = WallDot();
-            RotateY(-mouseMotion.Relative.X * MouseSensitivity);
+            RotateY(-mouseMotion.Relative.X * State.MouseSensitivity);
 
             if (isOnWall && WallDot() < wallNormalIntersect && wallNormalIntersect <= 0) {
-                RotateY(mouseMotion.Relative.X * MouseSensitivity);
+                RotateY(mouseMotion.Relative.X * State.MouseSensitivity);
             }
 
             Vector3 rotation = camera!.Rotation;
-            rotation.X -= mouseMotion.Relative.Y * MouseSensitivity;
+            rotation.X -= mouseMotion.Relative.Y * State.MouseSensitivity;
             rotation.X = Mathf.Clamp(
                 rotation.X,
-                Mathf.DegToRad(MinPitch),
-                Mathf.DegToRad(MaxPitch)
+                Mathf.DegToRad(State.MinPitch),
+                Mathf.DegToRad(State.MaxPitch)
             );
             camera.Rotation = rotation;
         }
@@ -215,7 +218,7 @@ public partial class Player : CharacterBody3D {
                 if (objectWithHp.IsAlive) {
                     //Velocity = Velocity.Bounce(Vector3.Forward);
                 } else {
-                    float yVelocity = Mathf.Max(-2 * Velocity.Y, JumpImpulse);
+                    float yVelocity = Mathf.Max(-2 * Velocity.Y, State.JumpImpulse);
                     Velocity = new Vector3(Velocity.X, yVelocity, Velocity.Z);
                 }
             }
