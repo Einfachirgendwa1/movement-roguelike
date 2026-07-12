@@ -7,7 +7,7 @@ public partial class GameManager : Singleton<GameManager> {
 
     public static void NewGame(ulong? seed = null) {
         if (seed is { } s) Instance.RandomNumberGenerator.Seed = s;
-        LoadScene(ResourceLoader.Load<PackedScene>("res://Levels/level_1.tscn"));
+        LoadScene(ResourceLoader.Load<PackedScene>("res://Levels/Level1.tscn"));
     }
 
     public static void LoadSave() {

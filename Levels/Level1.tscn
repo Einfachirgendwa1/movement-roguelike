@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://obd7pt4k3aw1"]
+
+[ext_resource type="PackedScene" uid="uid://chjl1c7c077bb" path="res://Enemies/enemy.tscn" id="1_05pb0"]
+[ext_resource type="PackedScene" uid="uid://7aye5i2307ng" path="res://Player/player.tscn" id="2_dl8mf"]
+[ext_resource type="Texture2D" uid="uid://dby8ybfybb54k" path="res://Assets/Skyboxes/AllSkyFree_Sky_EpicGloriousPink_Equirect.png" id="3_xcayt"]
+[ext_resource type="PackedScene" uid="uid://bc7slgbgqr4ws" path="res://Menus/PauseMenu/PauseMenu.tscn" id="5_7fl83"]
+[ext_resource type="PackedScene" uid="uid://rnsvaw5ryesa" path="res://Levels/StartingRoom.tscn" id="6_05pb0"]
+[ext_resource type="Script" uid="uid://cneeqtok7cbsr" path="res://GameState.cs" id="6_p5226"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_f6v34"]
+panorama = ExtResource("3_xcayt")
+
+[sub_resource type="Sky" id="Sky_f6v34"]
+sky_material = SubResource("PanoramaSkyMaterial_f6v34")
+
+[sub_resource type="Environment" id="Environment_f1bjn"]
+background_mode = 2
+sky = SubResource("Sky_f6v34")
+ambient_light_color = Color(1, 1, 1, 1)
+
+[node name="Level 1" type="Node3D" unique_id=449401401]
+
+[node name="Enemies" type="Node3D" parent="." unique_id=876360838]
+
+[node name="Enemy" parent="Enemies" unique_id=1329932342 instance=ExtResource("1_05pb0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2723465, 1, -4.9091988)
+
+[node name="Enemy2" parent="Enemies" unique_id=874044943 instance=ExtResource("1_05pb0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2857628, 1, -1.4396771)
+
+[node name="Player" parent="." unique_id=212192737 instance=ExtResource("2_dl8mf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.0011044, 0)
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1183141172]
+transform = Transform3D(0.9784224, 0.06682992, -0.19550823, 0.17002833, 0.27717772, 0.94565487, 0.117388554, -0.9584918, 0.2598339, 0, 3.2839274, 0)
+light_color = Color(1, 0.92156863, 0.78039217, 1)
+light_energy = 3.0
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=82786932]
+environment = SubResource("Environment_f1bjn")
+
+[node name="PauseMenu" parent="." unique_id=1005282506 instance=ExtResource("5_7fl83")]
+visible = false
+
+[node name="GameState" type="Node" parent="." unique_id=683502027]
+script = ExtResource("6_p5226")
+metadata/_custom_type_script = "uid://cneeqtok7cbsr"
+
+[node name="StartingRoom" parent="." unique_id=417633791 instance=ExtResource("6_05pb0")]

@@ -24,10 +24,15 @@ GameManager="*uid://bf4t8ifaa43ig"
 
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+window/vsync/vsync_mode=0
 
 [dotnet]
 
 project/assembly_name="Movement Roguelike 3D"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/rider-plugin/plugin.cfg", "res://addons/roombuilderplugin/plugin.cfg")
 
 [input]
 

@@ -6,4 +6,7 @@
         <RootNamespace>MovementRoguelike3D</RootNamespace>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    <ItemGroup>
+        <Folder Include="addons\"/>
+    </ItemGroup>
 </Project>
