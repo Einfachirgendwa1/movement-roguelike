@@ -45,46 +45,9 @@ public partial class Player : CharacterBody3D {
 
         #endregion
 
-        #region Horizontal Movement
-
-        #region Read Input
-
-        int left = Input.IsActionPressed("Left") ? 1 : 0;
-        int right = Input.IsActionPressed("Right") ? 1 : 0;
-        int xAxis = right - left;
-
-        int forward = Input.IsActionPressed("Forward") ? 1 : 0;
-        int backward = Input.IsActionPressed("Backward") ? 1 : 0;
-        int zAxis = backward - forward;
-
-        bool sprinting = Input.IsActionPressed("Sprint");
-        float sprintMult = sprinting ? SprintMult : 1;
-
-        #endregion
-
-        Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
-        Vector3 horizontalVelocity = new(Velocity.X, 0, Velocity.Z);
-        float speed = horizontalVelocity.Length();
-        float airMult = !onGround ? AirMoveMultiplier : 1;
-        Velocity += direction * MoveStrength * sprintMult * airMult;
-
-        if (sprinting && speed >= SprintAccelSpeedCap || !onGround) {
-            Vector3 horizontalOverride = new Vector3(Velocity.X, 0, Velocity.Z).Normalized() * speed;
-            Velocity = new Vector3(horizontalOverride.X, Velocity.Y, horizontalOverride.Z);
-        }
-
-        #endregion
-
-        #region Vertical Movement
-
-        if (Input.IsActionPressed("Jump") && onGround) {
-            Velocity += new Vector3(0, JumpImpulse, 0);
-        } else if (Input.IsActionJustPressed("Jump") && onWall) {
-            Velocity += WallJumpDirection(this).Normalized() * JumpImpulse * WallJumpMultiplier;
-            timeSpentSprinting = 0f;
-        }
-
-        #endregion
+        (int xAxis, int zAxis, bool sprinting, float sprintMult) = ReadInput();
+        Vector3 direction = HorizontalMovement(xAxis, zAxis, onGround, sprintMult, sprinting);
+        VerticalMovement(onGround, onWall);
 
         #region Drag
 
@@ -107,6 +70,44 @@ public partial class Player : CharacterBody3D {
         textEdit!.Text = $"Horizontal Speed: {new Vector3(Velocity.X, 0, Velocity.Z).Length()}\n";
         textEdit.Text += $"Vertical Speed: {Velocity.Y}";
         MoveAndSlide();
+    }
+
+    private Vector3 HorizontalMovement(int xAxis, int zAxis, bool onGround, float sprintMult, bool sprinting) {
+        Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
+        Vector3 horizontalVelocity = new(Velocity.X, 0, Velocity.Z);
+        float speed = horizontalVelocity.Length();
+        float airMult = !onGround ? AirMoveMultiplier : 1;
+        Velocity += direction * MoveStrength * sprintMult * airMult;
+
+        if (sprinting && speed >= SprintAccelSpeedCap || !onGround) {
+            Vector3 horizontalOverride = new Vector3(Velocity.X, 0, Velocity.Z).Normalized() * speed;
+            Velocity = new Vector3(horizontalOverride.X, Velocity.Y, horizontalOverride.Z);
+        }
+
+        return direction;
+    }
+
+    private static (int xAxis, int zAxis, bool sprinting, float sprintMult) ReadInput() {
+        int left = Input.IsActionPressed("Left") ? 1 : 0;
+        int right = Input.IsActionPressed("Right") ? 1 : 0;
+        int xAxis = right - left;
+
+        int forward = Input.IsActionPressed("Forward") ? 1 : 0;
+        int backward = Input.IsActionPressed("Backward") ? 1 : 0;
+        int zAxis = backward - forward;
+
+        bool sprinting = Input.IsActionPressed("Sprint");
+        float sprintMult = sprinting ? SprintMult : 1;
+        return (xAxis, zAxis, sprinting, sprintMult);
+    }
+
+    private void VerticalMovement(bool onGround, bool onWall) {
+        if (Input.IsActionPressed("Jump") && onGround) {
+            Velocity += new Vector3(0, JumpImpulse, 0);
+        } else if (Input.IsActionJustPressed("Jump") && onWall) {
+            Velocity += WallJumpDirection(this).Normalized() * JumpImpulse * WallJumpMultiplier;
+            timeSpentSprinting = 0f;
+        }
     }
 
     public override void _Process(double delta) {
