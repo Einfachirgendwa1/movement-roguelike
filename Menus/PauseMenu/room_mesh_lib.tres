@@ -19,15 +19,6 @@ image = SubResource("Image_qj6of")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_qj6of"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qj6of"]
-transparency = 1
-albedo_color = Color(1, 1, 1, 0.15686275)
-
-[sub_resource type="BoxMesh" id="BoxMesh_6qgi5"]
-material = SubResource("StandardMaterial3D_qj6of")
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_r4klr"]
-
 [resource]
 item/0/name = "Floor Tile"
 item/0/mesh = SubResource("BoxMesh_qj6of")
@@ -37,11 +28,4 @@ item/0/shapes = [SubResource("BoxShape3D_qj6of"), Transform3D(1, 0, 0, 0, 1, 0, 
 item/0/navigation_mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 item/0/navigation_layers = 1
 item/0/preview = SubResource("ImageTexture_cc6go")
-item/1/name = "Wall Tile"
-item/1/mesh = SubResource("BoxMesh_6qgi5")
-item/1/mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-item/1/mesh_cast_shadow = 1
-item/1/shapes = [SubResource("BoxShape3D_r4klr"), Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)]
-item/1/navigation_mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-item/1/navigation_layers = 1
 metadata/_editor_source_scene = "res://Levels/LevelBuilding/FloorTile.tscn"

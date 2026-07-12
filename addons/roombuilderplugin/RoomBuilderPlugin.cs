@@ -40,9 +40,6 @@ public partial class RoomBuilderPlugin : EditorPlugin {
     private void BuildButtonOnPressed() {
         if (gridMap == null) return;
 
-
-        GridMap topMap = gridMap.HasNode("TopMap") ? gridMap.GetNode<GridMap>("TopMap") : CreateTopMap();
-
         (Vector3I start, Vector3I end) = GetGridMapBounds();
         int xDist = end.X - start.X;
         int zDist = end.Z - start.Z;
@@ -51,32 +48,81 @@ public partial class RoomBuilderPlugin : EditorPlugin {
         EditorUndoRedoManager? undoRedo = GetUndoRedo();
         undoRedo.CreateAction("Build Shell");
 
-        for (int x = start.X; x <= end.X; x++) {
-            for (int y = start.Y; y <= end.Y; y++) {
-                for (int z = start.Z; z <= end.Z; z++) {
-                    if (OnShell(x, start, end, y, z) && gridMap.GetCellItem(new Vector3I(x, y, z)) != 0) {
-                        Vector3I cell = new(x, y, z);
-                        int oldItem = gridMap.GetCellItem(cell);
+        Material material = ResourceLoader.Load<StandardMaterial3D>("res://Levels/LevelBuilding/wall_material.tres");
 
-                        undoRedo.AddDoMethod(topMap, GridMap.MethodName.SetCellItem, cell, 1);
-                        undoRedo.AddUndoMethod(topMap, GridMap.MethodName.SetCellItem, cell, oldItem);
-                    }
-                }
-            }
-        }
+        Vector3 localStart = gridMap.MapToLocal(new Vector3I(start.X, start.Y, start.Z));
+        Vector3 localEnd = gridMap.MapToLocal(new Vector3I(end.X, end.Y, end.Z));
+
+        GetMesh("WallZLow", material,
+            localStart.Lerp(new Vector3(localEnd.X, localEnd.Y, localStart.Z - 2), 0.5f),
+            new Vector3(localEnd.X - localStart.X + 1, localEnd.Y - localStart.Y, 1),
+            undoRedo
+        );
+
+        GetMesh("WallZHigh", material,
+            localEnd.Lerp(new Vector3(localStart.X, localStart.Y, localEnd.Z + 2), 0.5f),
+            new Vector3(localEnd.X - localStart.X + 1, localEnd.Y - localStart.Y, 1),
+            undoRedo
+        );
+
+        GetMesh("WallXLow", material,
+            localStart.Lerp(new Vector3(localStart.X - 2, localEnd.Y, localEnd.Z), 0.5f),
+            new Vector3(1, localEnd.Y - localStart.Y, localEnd.Z - localStart.Z + 1),
+            undoRedo
+        );
+
+        GetMesh("WallXHigh", material,
+            localEnd.Lerp(new Vector3(localEnd.X + 2, localStart.Y, localStart.Z), 0.5f),
+            new Vector3(1, localEnd.Y - localStart.Y, localEnd.Z - localStart.Z + 1),
+            undoRedo
+        );
+
+        GetMesh("Roof", material,
+            localEnd.Lerp(new Vector3(localStart.X, localEnd.Y + 1, localStart.Z), 0.5f),
+            new Vector3(localEnd.X - localStart.X + 1, 1, localEnd.Z - localStart.Z + 1),
+            undoRedo
+        );
 
         undoRedo.CommitAction();
     }
 
-    private GridMap CreateTopMap() {
-        GridMap topMap = new();
-        topMap.MeshLibrary = gridMap!.MeshLibrary;
-        gridMap.AddChild(topMap);
-        topMap.Owner = EditorInterface.Singleton.GetEditedSceneRoot();
-        topMap.CellSize = gridMap.CellSize;
-        topMap.Name = "TopMap";
+    private void GetMesh(string name, Material material, Vector3 position, Vector3 scale,
+        EditorUndoRedoManager undoRedo) {
+        if (gridMap is null) return;
 
-        return topMap;
+        if (gridMap.HasNode(name)) {
+            undoRedo.AddDoMethod(gridMap, Node.MethodName.RemoveChild, gridMap.GetNode(name));
+            undoRedo.AddUndoMethod(gridMap, Node.MethodName.AddChild, gridMap.GetNode(name));
+        }
+
+        StaticBody3D staticBody3D = new();
+        staticBody3D.Name = name;
+
+        MeshInstance3D mesh = new();
+        mesh.Name = "MeshInstance3D";
+
+        mesh.Mesh = new BoxMesh();
+        mesh.Mesh.SurfaceSetMaterial(0, material);
+
+        staticBody3D.Position = position;
+        mesh.Scale = scale;
+
+        CollisionShape3D collisionShape3D = new();
+        collisionShape3D.Name = "CollisionShape3D";
+
+        BoxShape3D boxShape3D = new();
+        collisionShape3D.Shape = boxShape3D;
+        boxShape3D.Size = scale;
+
+        UndoRedoParent(undoRedo, staticBody3D, gridMap);
+        UndoRedoParent(undoRedo, mesh, staticBody3D);
+        UndoRedoParent(undoRedo, collisionShape3D, staticBody3D);
+    }
+
+    private static void UndoRedoParent(EditorUndoRedoManager undoRedo, Node child, Node parent) {
+        undoRedo.AddDoMethod(parent, Node.MethodName.AddChild, child);
+        undoRedo.AddDoMethod(child, Node.MethodName.SetOwner, EditorInterface.Singleton.GetEditedSceneRoot());
+        undoRedo.AddUndoMethod(parent, Node.MethodName.RemoveChild, child);
     }
 
     private static bool OnShell(int x, Vector3I start, Vector3I end, int y, int z) => x == start.X
