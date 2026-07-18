@@ -11,7 +11,7 @@ public partial class GameState : Node {
 
     #region Abilities
 
-    [Export] public float MoveStrength = 1.5f;
+    [Export] public float MoveStrength = 5f;
     [Export] public float AirMoveMultiplier = 0.3f;
     [Export] public float JumpImpulse = 15f;
     [Export] public float SprintMult = 2f;

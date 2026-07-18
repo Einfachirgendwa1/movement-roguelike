@@ -15,6 +15,9 @@ public partial class Player : CharacterBody3D {
     private const float AttackWindowDuration = 0.15f;
     private bool isAttacking;
 
+    private int acceleration = 5;
+    private int deceleration = 5;
+
     public override void _Ready() {
         Input.SetMouseMode(Input.MouseModeEnum.Captured);
         camera = GetNode<Camera3D>("Camera3D");
@@ -49,7 +52,7 @@ public partial class Player : CharacterBody3D {
         Vector3 direction = HorizontalMovement(xAxis, zAxis, onGround, sprintMult, sprinting);
         VerticalMovement(onGround, onWall);
 
-        #region Drag
+        /*#region Drag
 
         float mediumDrag = onGround ? State.GroundDrag : State.AirDrag;
 
@@ -58,19 +61,32 @@ public partial class Player : CharacterBody3D {
                 timeSpentSprinting += (float)delta;
             }
 
-            float sprintDrag = SprintDrag(timeSpentSprinting, mediumDrag);
+            float sprintDrag = SprintDrag(timeSpentSprinting, State.GroundDrag);
             Velocity = new Vector3(Velocity.X * sprintDrag, Velocity.Y * mediumDrag, Velocity.Z * sprintDrag);
         } else {
             timeSpentSprinting -= (float)delta;
             Velocity *= mediumDrag;
         }
 
-        #endregion
-
+        #endregion*/
+        if (new Vector3(xAxis, 0, zAxis).Length() != 0) {
+            Velocity = new Vector3(
+                Lerp(Velocity.X, direction.X *State.MoveStrength* sprintMult, (float)(acceleration * delta)),
+                0,
+                Lerp(Velocity.Z, direction.Z *State.MoveStrength* sprintMult, (float)(acceleration * delta)));
+        } else {
+            Velocity = new Vector3(
+                Lerp(Velocity.X, 0.0f, (float)(deceleration * delta)),
+                0,
+                Lerp(Velocity.Z, 0.0f, (float)(deceleration * delta)));
+        }
+        GD.Print(direction.X ,State.MoveStrength, sprintMult, Velocity.X, Velocity.Z);
         textEdit!.Text = $"Horizontal Speed: {new Vector3(Velocity.X, 0, Velocity.Z).Length()}\n";
         textEdit.Text += $"Vertical Speed: {Velocity.Y}";
         MoveAndSlide();
     }
+
+    public float Lerp(float firstFloat, float secondFloat, float by) => firstFloat * (1 - by) + secondFloat * by;
 
     private Vector3 HorizontalMovement(int xAxis, int zAxis, bool onGround, float sprintMult, bool sprinting) {
         Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
