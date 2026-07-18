@@ -73,7 +73,7 @@ public partial class Player : CharacterBody3D {
             Velocity = new Vector3(
                 Lerp(Velocity.X, direction.X *State.MoveStrength* sprintMult, (float)(acceleration * delta)),
                 0,
-                Lerp(Velocity.Z, direction.Z *State.MoveStrength* sprintMult, (float)(acceleration * delta)));
+                Lerp(Velocity.Z, direction.Z *State.MoveStrength* sprintMult, (float)(deceleration * delta)));
         } else {
             Velocity = new Vector3(
                 Lerp(Velocity.X, 0.0f, (float)(deceleration * delta)),
