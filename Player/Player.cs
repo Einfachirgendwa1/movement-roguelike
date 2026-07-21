@@ -69,37 +69,55 @@ public partial class Player : CharacterBody3D {
         }
 
         #endregion*/
-        if (new Vector3(xAxis, 0, zAxis).Length() != 0) {
-            Velocity = new Vector3(
-                Lerp(Velocity.X, direction.X *State.MoveStrength* sprintMult, (float)(acceleration * delta)),
-                0,
-                Lerp(Velocity.Z, direction.Z *State.MoveStrength* sprintMult, (float)(deceleration * delta)));
-        } else {
-            Velocity = new Vector3(
-                Lerp(Velocity.X, 0.0f, (float)(deceleration * delta)),
-                0,
-                Lerp(Velocity.Z, 0.0f, (float)(deceleration * delta)));
+        float horizontalSpeed = new Vector3(Velocity.X, 0, Velocity.Z).Length();
+        bool isMoving = new Vector3(xAxis, 0, zAxis).Length() != 0;
+        switch (isMoving) {
+            case true when horizontalSpeed < State.MaxMovementSpeed:
+                Velocity = new Vector3(
+                    Lerp(Velocity.X, direction.X * State.MoveStrength * sprintMult, (float)(acceleration * delta)),
+                    Velocity.Y,
+                    Lerp(Velocity.Z, direction.Z * State.MoveStrength * sprintMult, (float)(acceleration * delta)));
+                break;
+            case true when horizontalSpeed > State.MaxMovementSpeed:
+            {
+                Vector3 horizontal = new(Velocity.X, 0, Velocity.Z);
+                float speed = horizontal.Length();
+                Vector3 newDirection = horizontal.Normalized()
+                    .Lerp(direction.Normalized(), (float)(acceleration * delta))
+                    .Normalized();
+                Vector3 newVelocity = speed * newDirection;
+                newVelocity.Y = Velocity.Y;
+                Velocity = newVelocity;
+                break;
+            }
+            case false:
+                Velocity = new Vector3(
+                    Lerp(Velocity.X, 0.0f, (float)(deceleration * delta)),
+                    Velocity.Y,
+                    Lerp(Velocity.Z, 0.0f, (float)(deceleration * delta)));
+                break;
         }
-        GD.Print(direction.X ,State.MoveStrength, sprintMult, Velocity.X, Velocity.Z);
+
+
         textEdit!.Text = $"Horizontal Speed: {new Vector3(Velocity.X, 0, Velocity.Z).Length()}\n";
         textEdit.Text += $"Vertical Speed: {Velocity.Y}";
         MoveAndSlide();
     }
 
+    // maybe Mathf.Clamp(by, 0f, 1f) instead of by
     public float Lerp(float firstFloat, float secondFloat, float by) => firstFloat * (1 - by) + secondFloat * by;
 
     private Vector3 HorizontalMovement(int xAxis, int zAxis, bool onGround, float sprintMult, bool sprinting) {
         Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
-        Vector3 horizontalVelocity = new(Velocity.X, 0, Velocity.Z);
-        float speed = horizontalVelocity.Length();
-        float airMult = !onGround ? State.AirMoveMultiplier : 1;
-        Velocity += direction * State.MoveStrength * sprintMult * airMult;
-
-        if (sprinting && speed >= State.SprintAccelSpeedCap || !onGround) {
-            Vector3 horizontalOverride = new Vector3(Velocity.X, 0, Velocity.Z).Normalized() * speed;
-            Velocity = new Vector3(horizontalOverride.X, Velocity.Y, horizontalOverride.Z);
-        }
-
+        // Vector3 horizontalVelocity = new(Velocity.X, 0, Velocity.Z);
+        // float speed = horizontalVelocity.Length();
+        // float airMult = !onGround ? State.AirMoveMultiplier : 1;
+        // Velocity += direction * State.MoveStrength * sprintMult * airMult;
+        //
+        // if (sprinting && speed >= State.SprintAccelSpeedCap || !onGround) {
+        // 	Vector3 horizontalOverride = new Vector3(Velocity.X, 0, Velocity.Z).Normalized() * speed;
+        // 	Velocity = new Vector3(horizontalOverride.X, Velocity.Y, horizontalOverride.Z);
+        // }
         return direction;
     }
 

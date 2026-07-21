@@ -1,4 +1,7 @@
 [gd_resource type="ORMMaterial3D" format=3 uid="uid://c0yugrjg0njxb"]
 
+[ext_resource type="Texture2D" uid="uid://cv3i6ob8dskt7" path="res://Assets/Skyboxes/AllSkyFree_Sky_ColdSunset_Equirect.png" id="1_3ygy0"]
+
 [resource]
-albedo_color = Color(0.27, 0.27, 0.27, 1)
+albedo_color = Color(0.75, 0.75, 0.75, 1)
+albedo_texture = ExtResource("1_3ygy0")

@@ -17,6 +17,7 @@ public partial class GameState : Node {
     [Export] public float SprintMult = 2f;
     [Export] public float WallJumpMultiplier = 1.5f;
     [Export] public float SprintAccelSpeedCap = 9f;
+    [Export] public float MaxMovementSpeed = 10f;
 
     public static Func<float, float> WallRunningGravity => runSpeed => Mathf.Min(1f, 1f / runSpeed);
     public static Vector3 WallJumpDirection(Player.Player player) => player.GetWallNormal().Normalized() + Vector3.Up;
