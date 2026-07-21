@@ -71,25 +71,31 @@ public partial class Player : CharacterBody3D {
         #endregion*/
         float horizontalSpeed = new Vector3(Velocity.X, 0, Velocity.Z).Length();
         bool isMoving = new Vector3(xAxis, 0, zAxis).Length() != 0;
-        if (isMoving && horizontalSpeed < State.MaxMovementSpeed) {
-            Velocity = new Vector3(
-                Lerp(Velocity.X, direction.X * State.MoveStrength * sprintMult, (float)(acceleration * delta)),
-                Velocity.Y,
-                Lerp(Velocity.Z, direction.Z * State.MoveStrength * sprintMult, (float)(acceleration * delta)));
-        } else if (isMoving && horizontalSpeed > State.MaxMovementSpeed) {
-            Vector3 horizontal = new(Velocity.X, 0, Velocity.Z);
-            float speed = horizontal.Length();
-            Vector3 newDirection = horizontal.Normalized()
-                .Lerp(direction.Normalized(), (float)(acceleration * delta))
-                .Normalized();
-            Vector3 newVelocity = speed * newDirection;
-            newVelocity.Y = Velocity.Y;
-            Velocity = newVelocity;
-        } else {
-            Velocity = new Vector3(
-                Lerp(Velocity.X, 0.0f, (float)(deceleration * delta)),
-                Velocity.Y,
-                Lerp(Velocity.Z, 0.0f, (float)(deceleration * delta)));
+        switch (isMoving) {
+            case true when horizontalSpeed < State.MaxMovementSpeed:
+                Velocity = new Vector3(
+                    Lerp(Velocity.X, direction.X * State.MoveStrength * sprintMult, (float)(acceleration * delta)),
+                    Velocity.Y,
+                    Lerp(Velocity.Z, direction.Z * State.MoveStrength * sprintMult, (float)(acceleration * delta)));
+                break;
+            case true when horizontalSpeed > State.MaxMovementSpeed:
+            {
+                Vector3 horizontal = new(Velocity.X, 0, Velocity.Z);
+                float speed = horizontal.Length();
+                Vector3 newDirection = horizontal.Normalized()
+                    .Lerp(direction.Normalized(), (float)(acceleration * delta))
+                    .Normalized();
+                Vector3 newVelocity = speed * newDirection;
+                newVelocity.Y = Velocity.Y;
+                Velocity = newVelocity;
+                break;
+            }
+            case false:
+                Velocity = new Vector3(
+                    Lerp(Velocity.X, 0.0f, (float)(deceleration * delta)),
+                    Velocity.Y,
+                    Lerp(Velocity.Z, 0.0f, (float)(deceleration * delta)));
+                break;
         }
 
 
