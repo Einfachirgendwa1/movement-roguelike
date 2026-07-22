@@ -37,9 +37,8 @@ public partial class GameState : Node {
     [Export] public float GroundDrag = 0.80f;
     [Export] public float AirDrag = 0.95f;
 
-    public static float OverMaxSpeedDrag(float x, float drag) {
-        return Mathf.Lerp(1, drag, Mathf.Clamp((x - secondsBeforeDrag) * 0.05f, 0f, 1f));
-    }
+    public static float OverMaxSpeedDrag(float x, float drag) =>
+        Mathf.Lerp(1, drag, Mathf.Clamp((x - 2) * 0.05f, 0f, 1f));
 
     #endregion
 
