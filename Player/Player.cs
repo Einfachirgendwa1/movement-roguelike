@@ -10,7 +10,7 @@ public partial class Player : CharacterBody3D {
     private ColorRect? crosshair;
     private TextEdit? textEdit;
     private bool mouseMovementLocked;
-    private float timeSpentSprinting;
+    private float timeSpentOverMaxSpeed;
 
     private const float AttackWindowDuration = 0.15f;
     private bool isAttacking;
@@ -71,6 +71,13 @@ public partial class Player : CharacterBody3D {
         #endregion*/
         float horizontalSpeed = new Vector3(Velocity.X, 0, Velocity.Z).Length();
         bool isMoving = new Vector3(xAxis, 0, zAxis).Length() != 0;
+
+        if (horizontalSpeed > State.MaxMovementSpeed) {
+            timeSpentOverMaxSpeed += (float)delta;
+        } else {
+            timeSpentOverMaxSpeed = 0f;
+        }
+
         switch (isMoving) {
             case true when horizontalSpeed < State.MaxMovementSpeed:
                 Velocity = new Vector3(
@@ -82,6 +89,9 @@ public partial class Player : CharacterBody3D {
             {
                 Vector3 horizontal = new(Velocity.X, 0, Velocity.Z);
                 float speed = horizontal.Length();
+                float dragFactor = OverMaxSpeedDrag(timeSpentOverMaxSpeed, State.GroundDrag);
+                speed *= dragFactor;
+
                 Vector3 newDirection = horizontal.Normalized()
                     .Lerp(direction.Normalized(), (float)(acceleration * delta))
                     .Normalized();
@@ -143,7 +153,7 @@ public partial class Player : CharacterBody3D {
                         * State.JumpImpulse
                         * State.WallJumpMultiplier;
 
-            timeSpentSprinting = 0f;
+            timeSpentOverMaxSpeed = 0f;
         }
     }
 
@@ -235,7 +245,7 @@ public partial class Player : CharacterBody3D {
     private void AttackDetection() {
         if (Input.IsActionJustPressed("Attack") && !isAttacking) {
             StartCoroutine(AttackCoroutine(GetMeleeDamage()));
-            timeSpentSprinting = 0;
+            timeSpentOverMaxSpeed = 0;
         }
     }
 

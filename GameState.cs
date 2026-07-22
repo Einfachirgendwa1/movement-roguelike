@@ -18,7 +18,7 @@ public partial class GameState : Node {
     [Export] public float WallJumpMultiplier = 1.5f;
     [Export] public float SprintAccelSpeedCap = 9f;
     [Export] public float MaxMovementSpeed = 10f;
-
+    public static float secondsBeforeDrag = 4;
     public static Func<float, float> WallRunningGravity => runSpeed => Mathf.Min(1f, 1f / runSpeed);
     public static Vector3 WallJumpDirection(Player.Player player) => player.GetWallNormal().Normalized() + Vector3.Up;
 
@@ -37,8 +37,9 @@ public partial class GameState : Node {
     [Export] public float GroundDrag = 0.80f;
     [Export] public float AirDrag = 0.95f;
 
-    public static float SprintDrag(float x, float drag) =>
-        Mathf.Lerp(1, drag, Mathf.Clamp((x - 2) * 0.05f, 0f, 1f));
+    public static float OverMaxSpeedDrag(float x, float drag) {
+        return Mathf.Lerp(1, drag, Mathf.Clamp((x - secondsBeforeDrag) * 0.05f, 0f, 1f));
+    }
 
     #endregion
 
