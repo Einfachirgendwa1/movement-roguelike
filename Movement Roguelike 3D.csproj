@@ -8,5 +8,9 @@
     </PropertyGroup>
     <ItemGroup>
         <Folder Include="addons\"/>
+        <Folder Include="Assets\Low_Poly_Chest [2.0]\"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="LootBox.cs"/>
     </ItemGroup>
 </Project>
