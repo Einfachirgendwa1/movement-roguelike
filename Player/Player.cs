@@ -49,8 +49,8 @@ public partial class Player : CharacterBody3D {
         #endregion
 
         (int xAxis, int zAxis, bool sprinting, float sprintMult) = ReadInput();
-        Vector3 direction = HorizontalMovement(xAxis, zAxis, onGround, sprintMult, sprinting);
-        VerticalMovement(onGround, onWall);
+        Vector3 direction = HorizontalMovement(xAxis, zAxis, onGround, sprintMult, sprinting, onWall);
+        bool wallJumped = VerticalMovement(onGround, onWall);
 
         /*#region Drag
 
@@ -117,17 +117,15 @@ public partial class Player : CharacterBody3D {
     // maybe Mathf.Clamp(by, 0f, 1f) instead of by
     public float Lerp(float firstFloat, float secondFloat, float by) => firstFloat * (1 - by) + secondFloat * by;
 
-    private Vector3 HorizontalMovement(int xAxis, int zAxis, bool onGround, float sprintMult, bool sprinting) {
+    private Vector3 HorizontalMovement(int xAxis, int zAxis, bool onGround, float sprintMult, bool sprinting, bool onWall) {
         Vector3 direction = (Transform.Basis * new Vector3(xAxis, 0, zAxis)).Normalized();
-        // Vector3 horizontalVelocity = new(Velocity.X, 0, Velocity.Z);
-        // float speed = horizontalVelocity.Length();
-        // float airMult = !onGround ? State.AirMoveMultiplier : 1;
-        // Velocity += direction * State.MoveStrength * sprintMult * airMult;
-        //
-        // if (sprinting && speed >= State.SprintAccelSpeedCap || !onGround) {
-        // 	Vector3 horizontalOverride = new Vector3(Velocity.X, 0, Velocity.Z).Normalized() * speed;
-        // 	Velocity = new Vector3(horizontalOverride.X, Velocity.Y, horizontalOverride.Z);
-        // }
+
+        if (onWall && !onGround) {
+            Vector3 wallNormal = GetWallNormal();
+            direction -= wallNormal * direction.Dot(wallNormal);
+            direction = direction.Normalized();
+        }
+
         return direction;
     }
 
@@ -145,7 +143,7 @@ public partial class Player : CharacterBody3D {
         return (xAxis, zAxis, sprinting, sprintMult);
     }
 
-    private void VerticalMovement(bool onGround, bool onWall) {
+    private bool VerticalMovement(bool onGround, bool onWall) {
         if (Input.IsActionPressed("Jump") && onGround) {
             Velocity += new Vector3(0, State.JumpImpulse, 0);
         } else if (Input.IsActionJustPressed("Jump") && onWall) {
@@ -154,7 +152,9 @@ public partial class Player : CharacterBody3D {
                         * State.WallJumpMultiplier;
 
             timeSpentOverMaxSpeed = 0f;
+            return true;
         }
+        return false;
     }
 
     public override void _Process(double delta) {
@@ -182,7 +182,9 @@ public partial class Player : CharacterBody3D {
         #region Lock Camera while Wallrunning
 
         if (IsOnWallOnly() && WallDot() < 0) {
-            RotateY(Forward().SignedAngleTo(WallRunClampedDirection(), Vector3.Up) * 0.13f);
+            float angle = Forward().SignedAngleTo(WallRunClampedDirection(), Vector3.Up);
+            GD.Print(angle);
+            RotateY(angle * (float)delta * 8f);
         }
 
         #endregion
